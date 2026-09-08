@@ -11,12 +11,15 @@ import ArtifactsPage from './ArtifactsPage';
 import TimelinePage from './TimelinePage';
 import RoutesPage from './RoutesPage';
 import SolarTermsPage from './SolarTermsPage';
+import CoverPage from './CoverPage';
+import CatalogPage from './CatalogPage';
+import { landItems, folkItems, introCopy } from '@/data/catalog';
 import { AnimatePresence, motion } from 'framer-motion';
 import { isCompactViewport, useCompactLayout } from '@/hooks/useCompactLayout';
 
 export default function Home() {
   const isCompactLayout = useCompactLayout();
-  const [activeNav, setActiveNav] = useState('map');
+  const [activeNav, setActiveNav] = useState('cover');
   const [selectedPoint, setSelectedPoint] = useState<CulturePoint | null>(() => (
     isCompactViewport() ? null : culturePoints[0]
   ));
@@ -162,6 +165,8 @@ export default function Home() {
     setActiveRouteStopId(pointId);
   }, []);
 
+  if (activeNav === 'cover') return <CoverPage onEnter={() => setActiveNav('map')} />;
+
   return (
     <div className="h-[100dvh] min-h-[100svh] flex flex-col bg-background overflow-hidden">
       <Header
@@ -222,6 +227,14 @@ export default function Home() {
           </motion.div>
         )}
 
+        {(activeNav === 'land' || activeNav === 'folk') && (
+          <motion.div key={activeNav} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 min-h-0 overflow-y-auto">
+            <CatalogPage key={activeNav} title={activeNav === 'land' ? '土地制度' : '民俗文化'}
+              introduction={activeNav === 'land' ? introCopy.land : introCopy.folk}
+              items={activeNav === 'land' ? landItems : folkItems} onBack={handleBackToMap}
+              kind={activeNav === 'land' ? 'land' : 'folk'} />
+          </motion.div>
+        )}
         {activeNav === 'artifacts' && (
           <motion.div
             key="artifacts"

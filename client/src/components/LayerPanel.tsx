@@ -62,19 +62,19 @@ export default function LayerPanel({ visibleLayers, onLayerToggle, onSearch, onC
         <p className="text-xs font-medium text-muted-foreground mb-2">图层控制</p>
         <LayerToggle
           color="#8B6914"
-          label="古代农耕遗址"
+          label="重要遗址"
           checked={visibleLayers.ancient}
           onChange={() => onLayerToggle('ancient')}
         />
         <LayerToggle
           color="#4A7C59"
-          label="现代农耕地标"
+          label="重大工程"
           checked={visibleLayers.modern}
           onChange={() => onLayerToggle('modern')}
         />
         <LayerToggle
           color="#C41E3A"
-          label="红色农耕旧址"
+          label="重要场馆"
           checked={visibleLayers.red}
           onChange={() => onLayerToggle('red')}
         />
@@ -101,9 +101,9 @@ export default function LayerPanel({ visibleLayers, onLayerToggle, onSearch, onC
       <div className="hidden lg:block px-4 py-3 border-t border-gold/10">
         <p className="text-xs font-medium text-muted-foreground mb-2">图例说明</p>
         <div className="space-y-1.5">
-          <LegendItem color="#8B6914" label="古代农耕遗址" period="远古—清代" />
-          <LegendItem color="#4A7C59" label="现代农耕地标" period="近现代—至今" />
-          <LegendItem color="#C41E3A" label="红色农耕旧址" period="革命时期" />
+          <LegendItem color="#8B6914" label="重要遗址" period="遗址与传统聚落" />
+          <LegendItem color="#4A7C59" label="重大工程" period="农业建设与实践" />
+          <LegendItem color="#C41E3A" label="重要场馆" period="博物馆与展示场所" />
         </div>
       </div>
 
@@ -128,7 +128,7 @@ function LayerToggle({ color, label, checked, onChange }: { color: string; label
         <div className="w-3 h-3 rounded-full border-2 border-white shadow-sm" style={{ background: color }} />
         <span className="text-xs text-foreground">{label}</span>
       </div>
-      <Switch checked={checked} onCheckedChange={onChange} className="lg:scale-75" />
+      <Switch aria-label={label} checked={checked} onCheckedChange={onChange} className="lg:scale-75" />
     </div>
   );
 }

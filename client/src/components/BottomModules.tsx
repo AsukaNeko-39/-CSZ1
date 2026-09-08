@@ -1,199 +1,70 @@
-import { ChevronRight } from 'lucide-react';
-import { culturePoints, themeRoutes, timelineEvents, solarTerms, artifacts } from '@/data/points';
-import { assetUrl, hideBrokenImage } from '@/lib/assets';
+import { ArrowUpRight, BookOpen } from "lucide-react";
+import { timeline, landItems, folkItems, artifactItems } from "@/data/catalog";
+import { assetUrl } from "@/lib/assets";
 
-interface BottomModulesProps {
-  onPointSelect?: (pointId: string) => void;
-  onRouteSelect?: (routeId: string) => void;
+interface Props {
   onNavigate?: (nav: string) => void;
+  onPointSelect?: (id: string) => void;
+  onRouteSelect?: (id: string) => void;
 }
 
-// AI-generated refined timeline icons
-const timelineIcons: Record<string, string> = {
-  't001': assetUrl('/manus-storage/timeline-icon-1-prehistoric.webp'),
-  't002': assetUrl('/manus-storage/timeline-icon-2-neolithic.webp'),
-  't003': assetUrl('/manus-storage/timeline-icon-3-bronze-age.webp'),
-  't004': assetUrl('/manus-storage/timeline-icon-4-imperial.webp'),
-  't005': assetUrl('/manus-storage/timeline-icon-5-modern.webp'),
-  't006': assetUrl('/manus-storage/timeline-icon-6-hybrid-rice.webp'),
-};
-
-const solarTermIcons: Record<string, string> = {
-  'st01': assetUrl('/manus-storage/solar-terms/st-lichun.webp'),
-  'st02': assetUrl('/manus-storage/solar-terms/st-yushui.webp'),
-  'st03': assetUrl('/manus-storage/solar-terms/st-jingzhe.webp'),
-  'st04': assetUrl('/manus-storage/solar-terms/st-chunfen.webp'),
-  'st05': assetUrl('/manus-storage/solar-terms/st-qingming.webp'),
-  'st06': assetUrl('/manus-storage/solar-terms/st-guyu.webp'),
-  'st07': assetUrl('/manus-storage/solar-terms/st-lixia.webp'),
-  'st08': assetUrl('/manus-storage/solar-terms/st-xiaoman.webp'),
-};
-
-// Rice icon for headlines
-const RICE_ICON = assetUrl('/manus-storage/rice-icon-headline.webp');
-const BOTTOM_FIELD_DECOR = assetUrl('/manus-storage/bottom-field-decor.webp');
-
-function swapToFallbackImage(event: { currentTarget: HTMLImageElement }, fallback: string | undefined) {
-  if (!fallback) {
-    hideBrokenImage(event);
-    return;
-  }
-  event.currentTarget.onerror = null;
-  event.currentTarget.src = fallback;
-}
-
-export default function BottomModules({ onNavigate, onPointSelect, onRouteSelect }: BottomModulesProps) {
+export default function BottomModules({ onNavigate }: Props) {
+  const sections = [
+    {
+      id: "timeline",
+      title: "湖湘农耕文化发展脉络",
+      items: timeline
+        .slice(0, 3)
+        .map(item => ({ name: item.era, image: item.image })),
+    },
+    {
+      id: "land",
+      title: "土地制度",
+      items: landItems
+        .slice(0, 3)
+        .map(item => ({ name: item.name, image: item.images[0]?.src })),
+    },
+    {
+      id: "folk",
+      title: "民俗文化",
+      items: [folkItems[0], folkItems[4], folkItems[12]].map(item => ({
+        name: item.name,
+        image: item.images[0]?.src,
+      })),
+    },
+    {
+      id: "artifacts",
+      title: "重要文物",
+      items: [artifactItems[1], artifactItems[3], artifactItems[4]].map(
+        item => ({ name: item.name, image: item.images[0]?.src })
+      ),
+    },
+  ];
   return (
-    <div
-      className="hidden lg:block w-full flex-shrink-0 relative overflow-hidden"
-      style={{ background: 'linear-gradient(180deg, #faf8f2 0%, #f2ead7 62%, #ede2c9 100%)' }}
-    >
-      <div className="gold-thread" />
-
-      {/* Field decoration extends through the whole bottom area, flowing into the footer */}
-      <div className="absolute inset-0 pointer-events-none">
-        <img
-          src={BOTTOM_FIELD_DECOR}
-          alt=""
-          className="absolute bottom-0 left-0 w-full h-full object-cover opacity-[0.34]"
-          style={{ mixBlendMode: 'multiply', objectPosition: 'center 78%' }}
-        />
-        {/* Soft fade at the very bottom so filing text stays readable */}
-        <div
-          className="absolute bottom-0 left-0 w-full h-10"
-          style={{ background: 'linear-gradient(180deg, rgba(237,226,201,0) 0%, rgba(240,230,207,0.55) 100%)' }}
-        />
-      </div>
-
-      <div className="grid grid-cols-12 gap-0 relative z-10" style={{ height: '196px' }}>
-
-        {/* Theme Routes - 3 cols */}
-        <div className="col-span-3 px-4 py-3 border-r border-gold/15 overflow-hidden">
-          <div className="flex items-center justify-between mb-2.5">
-            <h3 className="text-[16px] font-bold font-serif flex items-center gap-1.5" style={{ color: '#3d2e0a' }}>
-              <img src={RICE_ICON} alt="" className="w-5 h-5 object-contain opacity-80" onError={hideBrokenImage} />
-              主题线路
-            </h3>
-            <button onClick={() => onNavigate?.('routes')} className="text-[12px] text-[#8a7a5a] hover:text-gold-dark flex items-center gap-0.5 transition-colors duration-300">
-              更多线路 <ChevronRight size={12} />
-            </button>
-          </div>
-          <div className="flex gap-2.5">
-            {themeRoutes.slice(0, 3).map((route) => (
-              <button key={route.id} type="button" className="flex-1 bottom-module-card group text-left active:scale-[0.97]" onClick={() => onRouteSelect?.(route.id)}>
-                <div className="bottom-module-thumb aspect-[16/10] rounded-md overflow-hidden bg-muted mb-1.5 shadow-sm border border-gold/10 group-hover:shadow-lg group-hover:border-gold/30 transition-all duration-300 relative">
-                  <img
-                    src={route.coverImage}
-                    alt={route.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    onError={(event) => swapToFallbackImage(event, culturePoints.find((point) => point.id === route.points[0])?.coverImage)}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <h4 className="text-[13px] font-bold text-foreground truncate group-hover:text-gold-dark transition-colors leading-tight">{route.name}</h4>
-                <p className="text-[11px] text-muted-foreground line-clamp-2 leading-snug mt-1">{route.summary}</p>
+    <section className="culture-bottom" aria-label="文化专题入口">
+      {sections.map(section => (
+        <div className="culture-bottom-section" key={section.id}>
+          <button
+            className="culture-bottom-heading"
+            onClick={() => onNavigate?.(section.id)}
+          >
+            <h2>{section.title}</h2>
+            <ArrowUpRight size={15} />
+          </button>
+          <div className="culture-bottom-items">
+            {section.items.map(item => (
+              <button key={item.name} onClick={() => onNavigate?.(section.id)}>
+                {item.image ? (
+                  <img src={assetUrl(item.image)} alt="" loading="lazy" />
+                ) : (
+                  <BookOpen />
+                )}
+                <span>{item.name}</span>
               </button>
             ))}
           </div>
         </div>
-
-        {/* Timeline - 3 cols: AI-generated refined icons */}
-        <div className="col-span-3 px-4 py-3 border-r border-gold/15 overflow-hidden">
-          <div className="flex items-center justify-between mb-2.5">
-            <h3 className="text-[16px] font-bold font-serif flex items-center gap-1.5" style={{ color: '#3d2e0a' }}>
-              <img src={RICE_ICON} alt="" className="w-5 h-5 object-contain opacity-80" onError={hideBrokenImage} />
-              湖湘农耕文化发展脉络
-            </h3>
-            <button onClick={() => onNavigate?.('timeline')} className="text-[12px] text-[#8a7a5a] hover:text-gold-dark flex items-center gap-0.5 transition-colors duration-300 whitespace-nowrap">
-              完整脉络 <ChevronRight size={12} />
-            </button>
-          </div>
-          {/* AI-generated refined icons */}
-          <div className="flex items-start justify-between gap-1">
-            {timelineEvents.map((event) => (
-              <button key={event.id} type="button" className="flex flex-col items-center text-center group bottom-timeline-item flex-1 py-1">
-                <div className="w-12 h-12 rounded-full overflow-hidden mb-1.5 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md border border-gold/15 relative bottom-icon-frame">
-                  <span className="bottom-icon-fallback">{event.icon}</span>
-                  <img
-                    src={timelineIcons[event.id] || ''}
-                    alt={event.title}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    onError={hideBrokenImage}
-                  />
-                </div>
-                <span className="text-[11px] font-semibold text-foreground leading-tight block">{event.title}</span>
-                <span className="text-[10px] text-muted-foreground leading-tight mt-0.5">{event.period}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Solar Terms - 2 cols: AI-generated refined icons */}
-        <div className="col-span-2 px-3 py-3 border-r border-gold/15 overflow-hidden">
-          <div className="flex items-center justify-between mb-2.5">
-            <h3 className="text-[16px] font-bold font-serif flex items-center gap-1.5" style={{ color: '#3d2e0a' }}>
-              <img src={RICE_ICON} alt="" className="w-5 h-5 object-contain opacity-80" onError={hideBrokenImage} />
-              二十四节气
-            </h3>
-            <button onClick={() => onNavigate?.('solar')} className="text-[12px] text-[#8a7a5a] hover:text-gold-dark flex items-center gap-0.5 transition-colors duration-300 whitespace-nowrap">
-              全部 <ChevronRight size={12} />
-            </button>
-          </div>
-          <div className="grid grid-cols-4 gap-x-2 gap-y-2">
-            {solarTerms.slice(0, 8).map((term) => (
-              <button key={term.id} type="button" className="flex flex-col items-center gap-1 group bottom-solar-item py-0.5">
-                <div className="w-10 h-10 rounded-full overflow-hidden group-hover:shadow-md transition-all duration-300 border border-gold/12 relative bottom-icon-frame">
-                  <span className="bottom-icon-fallback text-[13px]">{term.name.slice(0, 1)}</span>
-                  <img
-                    src={solarTermIcons[term.id] || ''}
-                    alt={term.name}
-                    className="absolute inset-0 h-full w-full object-contain p-1"
-                    onError={hideBrokenImage}
-                  />
-                </div>
-                <span className="text-[11px] text-foreground/80 group-hover:text-gold-dark transition-colors duration-300">{term.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Artifacts - 4 cols: single row of larger images */}
-        <div className="col-span-4 px-4 py-3 overflow-hidden">
-          <div className="flex items-center justify-between mb-2.5">
-            <h3 className="text-[16px] font-bold font-serif flex items-center gap-1.5" style={{ color: '#3d2e0a' }}>
-              <img src={RICE_ICON} alt="" className="w-5 h-5 object-contain opacity-80" onError={hideBrokenImage} />
-              重要文物
-            </h3>
-            <button onClick={() => onNavigate?.('artifacts')} className="text-[12px] text-[#8a7a5a] hover:text-gold-dark flex items-center gap-0.5 transition-colors duration-300">
-              查看更多 <ChevronRight size={12} />
-            </button>
-          </div>
-          {/* Single row of 5 larger artifact images */}
-          <div className="grid grid-cols-5 gap-2.5">
-            {artifacts.slice(0, 5).map((artifact) => (
-              <button key={artifact.id} type="button" className="group bottom-module-card active:scale-[0.97]" onClick={() => {
-                // Match artifact's unearthedSite to a culturePoint name
-                const siteToPointMap: Record<string, string> = {
-                  '道县玉蟾岩遗址': 'p002',
-                  '澧县彭头山遗址': 'p006',
-                  '澧县龟市遗址': 'p001',
-                  '龙山县里耶古城': 'p008',
-                  '澧县城头山遗址': 'p001',
-                  '洪江高庙遗址': 'p007',
-                };
-                const pointId = siteToPointMap[artifact.unearthedSite];
-                if (pointId) onPointSelect?.(pointId);
-              }}>
-                <div className="bottom-module-thumb aspect-[3/4] rounded-md overflow-hidden bg-muted border border-gold/10 group-hover:border-gold/30 group-hover:shadow-lg transition-all duration-300 relative">
-                  <img src={artifact.image} alt={artifact.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" onError={hideBrokenImage} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <p className="text-[10px] text-foreground/70 mt-1 truncate text-center group-hover:text-gold-dark transition-colors duration-300">{artifact.name}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+      ))}
+    </section>
   );
 }

@@ -86,7 +86,7 @@ export const culturePoints: CulturePoint[] = [
   {
     id: 'p003',
     name: '新化紫鹊界梯田',
-    category: 'ancient',
+    category: 'modern',
     period: '秦汉时期',
     city: '娄底市',
     district: '新化县',
@@ -114,7 +114,7 @@ export const culturePoints: CulturePoint[] = [
   {
     id: 'p005',
     name: '十八洞村',
-    category: 'red',
+    category: 'modern',
     period: '当代',
     city: '湘西州',
     district: '花垣县',
@@ -170,7 +170,7 @@ export const culturePoints: CulturePoint[] = [
   {
     id: 'p009',
     name: '隆平水稻博物馆',
-    category: 'modern',
+    category: 'red',
     period: '现代',
     city: '长沙市',
     district: '芙蓉区',
@@ -183,7 +183,7 @@ export const culturePoints: CulturePoint[] = [
   {
     id: 'p010',
     name: '韶山毛泽东故居',
-    category: 'red',
+    category: 'ancient',
     period: '近现代',
     city: '湘潭市',
     district: '韶山市',
@@ -197,7 +197,7 @@ export const culturePoints: CulturePoint[] = [
   {
     id: 'p011',
     name: '浏阳秋收起义旧址',
-    category: 'red',
+    category: 'ancient',
     period: '近现代',
     city: '长沙市',
     district: '浏阳市',
@@ -211,7 +211,7 @@ export const culturePoints: CulturePoint[] = [
   {
     id: 'p012',
     name: '岳阳楼农耕文化园',
-    category: 'modern',
+    category: 'red',
     period: '现代',
     city: '岳阳市',
     district: '岳阳楼区',

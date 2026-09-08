@@ -12,9 +12,9 @@ interface PointDetailProps {
 }
 
 const categoryLabels: Record<string, string> = {
-  ancient: '古代农耕遗址',
-  modern: '现代农耕地标',
-  red: '红色农耕旧址',
+  ancient: '重要遗址',
+  modern: '重大工程',
+  red: '重要场馆',
 };
 
 const categoryBgColors: Record<string, string> = {

@@ -1,6 +1,9 @@
-import { CalendarDays, History, Landmark, MapPinned, Route, Search, Share2 } from 'lucide-react';
+import { BookOpen, History, Landmark, MapPinned, Sprout, Search, Share2 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { assetUrl } from '@/lib/assets';
+import { culturePoints } from '@/data/points';
+import { timeline, landItems, folkItems, artifactItems } from '@/data/catalog';
 
 interface HeaderProps {
   activeNav: string;
@@ -9,16 +12,27 @@ interface HeaderProps {
 }
 
 const navItems = [
-  { id: 'map', label: '地图', desktopLabel: '地图浏览', icon: MapPinned },
-  { id: 'routes', label: '线路', desktopLabel: '主题线路', icon: Route },
-  { id: 'timeline', label: '脉络', desktopLabel: '发展脉络', icon: History },
-  { id: 'artifacts', label: '文物', desktopLabel: '重要文物', icon: Landmark },
-  { id: 'solar', label: '节气', desktopLabel: '节气日历', icon: CalendarDays },
+  { id: 'map', label: '地图浏览', desktopLabel: '地图浏览', icon: MapPinned },
+  { id: 'timeline', label: '发展脉络', desktopLabel: '发展脉络', icon: History },
+  { id: 'land', label: '土地制度', desktopLabel: '土地制度', icon: BookOpen },
+  { id: 'folk', label: '民俗文化', desktopLabel: '民俗文化', icon: Sprout },
+  { id: 'artifacts', label: '重要文物', desktopLabel: '重要文物', icon: Landmark },
 ];
 
 export default function Header({ activeNav, onNavChange, onSearch }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [logoFailed, setLogoFailed] = useState(false);
+
+  const handleShare = async () => {
+    try {
+      const response = await fetch('/__share-link');
+      const data = response.ok && response.headers.get('content-type')?.includes('application/json') ? await response.json() : null;
+      await navigator.clipboard.writeText(data?.url || window.location.href);
+      toast('分享链接已复制', { description: '将链接发给对方即可查看' });
+    } catch {
+      toast('暂时无法复制', { description: '请使用收到的完整分享链接' });
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +46,7 @@ export default function Header({ activeNav, onNavChange, onSearch }: HeaderProps
         <div className="mobile-safe-top flex min-w-0 items-center justify-between gap-2 px-3 sm:px-5 h-[54px] lg:h-[56px]">
           {/* Brand area - seal + literary title */}
           <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3.5">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 flex-shrink-0 relative logo-stamp-shell">
+            <button type="button" onClick={() => onNavChange('cover')} aria-label="返回封面" className="w-9 h-9 sm:w-11 sm:h-11 flex-shrink-0 relative logo-stamp-shell">
               {logoFailed ? (
                 <span className="logo-stamp-fallback">农<br />耕</span>
               ) : (
@@ -43,7 +57,7 @@ export default function Header({ activeNav, onNavChange, onSearch }: HeaderProps
                   onError={() => setLogoFailed(true)}
                 />
               )}
-            </div>
+            </button>
             <div className="min-w-0 border-l border-gold/20 pl-2.5 sm:pl-3.5">
               <h1 className="truncate whitespace-nowrap text-[14px] sm:text-[17px] font-bold font-serif tracking-[0.06em] sm:tracking-[0.15em] leading-tight" style={{ color: '#3d2e0a' }}>
                 湖南省农耕文化地图
@@ -60,7 +74,7 @@ export default function Header({ activeNav, onNavChange, onSearch }: HeaderProps
               <button
                 key={item.id}
                 onClick={() => onNavChange(item.id)}
-                className={`px-5 py-2 text-[13px] font-medium font-serif tracking-wide transition-all duration-250 relative ${
+                className={`px-3 xl:px-5 py-2 text-[13px] font-medium font-serif tracking-wide transition-all duration-250 relative ${
                   activeNav === item.id
                     ? 'text-[#3d2e0a]'
                     : 'text-[#8a7a5a] hover:text-[#5c4a1e]'
@@ -83,16 +97,17 @@ export default function Header({ activeNav, onNavChange, onSearch }: HeaderProps
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="搜索点位、遗址、主题..."
-                  className="w-48 h-8 pl-3 pr-8 text-xs bg-white/60 border border-gold/15 rounded focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/15 placeholder:text-[#b0a080] font-serif"
+                  className="w-36 xl:w-48 h-8 pl-3 pr-8 text-xs bg-white/60 border border-gold/15 rounded focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/15 placeholder:text-[#b0a080] font-serif"
                   style={{ borderRadius: '3px' }}
                 />
-                <button type="submit" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#b0a080] hover:text-gold-dark transition-colors">
+                <button type="submit" aria-label="搜索地图点位" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#b0a080] hover:text-gold-dark transition-colors">
                   <Search size={14} />
                 </button>
               </div>
             </form>
             <button
               aria-label="分享"
+              onClick={handleShare}
               className="flex w-10 h-10 lg:w-auto lg:h-auto items-center justify-center gap-1.5 px-2.5 sm:px-3.5 lg:py-1.5 text-xs font-medium font-serif border rounded hover:shadow-sm transition-all duration-200 active:scale-97"
               style={{ color: '#5c4a1e', borderColor: 'rgba(139,105,20,0.25)', borderRadius: '3px' }}
             >
@@ -133,10 +148,11 @@ export default function Header({ activeNav, onNavChange, onSearch }: HeaderProps
       {/* Stats bar - catalogue index feel */}
       <div className="hidden lg:block border-b border-gold/10" style={{ background: 'rgba(255,253,248,0.88)', backdropFilter: 'blur(10px)' }}>
         <div className="flex items-center justify-between sm:justify-center gap-1 sm:gap-6 lg:gap-10 px-3 sm:px-6 h-[34px]">
-          <StatItem icon={<PinIcon />} label="文化点位" value={128} unit="处" />
-          <StatItem icon={<RouteIcon />} label="主题线路" value={3} unit="条" />
-          <StatItem icon={<ArtifactIcon />} label="重要文物" value={24} unit="件" />
-          <StatItem icon={<LeafIcon />} label="二十四节气" value={24} unit="个" />
+          <StatItem icon={<PinIcon />} label="文化点位" value={culturePoints.length} unit="处" />
+          <StatItem icon={<History size={14} />} label="发展脉络" value={timeline.length} unit="个阶段" />
+          <StatItem icon={<BookOpen size={14} />} label="土地制度" value={landItems.length} unit="项" />
+          <StatItem icon={<ArtifactIcon />} label="重要文物" value={artifactItems.length} unit="件" />
+          <StatItem icon={<LeafIcon />} label="民俗文化" value={folkItems.length} unit="项" />
         </div>
       </div>
     </header>
