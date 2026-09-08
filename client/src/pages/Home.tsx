@@ -1,291 +1,371 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import Header from '@/components/Header';
-import HunanMap from '@/components/HunanMap';
-import LayerPanel from '@/components/LayerPanel';
-import PointDetail from '@/components/PointDetail';
-import BottomModules from '@/components/BottomModules';
-import Footer from '@/components/Footer';
-import { culturePoints, themeRoutes, CulturePoint, type ThemeRoute } from '@/data/points';
-import { toast } from 'sonner';
-import ArtifactsPage from './ArtifactsPage';
-import TimelinePage from './TimelinePage';
-import RoutesPage from './RoutesPage';
-import SolarTermsPage from './SolarTermsPage';
-import CoverPage from './CoverPage';
-import CatalogPage from './CatalogPage';
-import { landItems, folkItems, introCopy } from '@/data/catalog';
-import { AnimatePresence, motion } from 'framer-motion';
-import { isCompactViewport, useCompactLayout } from '@/hooks/useCompactLayout';
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Header from "@/components/Header";
+import HunanMap from "@/components/HunanMap";
+import LayerPanel from "@/components/LayerPanel";
+import PointDetail from "@/components/PointDetail";
+import BottomModules from "@/components/BottomModules";
+import Footer from "@/components/Footer";
+import { chapters } from "@/components/CultureScenery";
+import {
+  culturePoints,
+  themeRoutes,
+  type CulturePoint,
+  type ThemeRoute,
+} from "@/data/points";
+import { landItems, folkItems, introCopy } from "@/data/catalog";
+import { toast } from "sonner";
+import ArtifactsPage from "./ArtifactsPage";
+import TimelinePage from "./TimelinePage";
+import RoutesPage from "./RoutesPage";
+import SolarTermsPage from "./SolarTermsPage";
+import CoverPage from "./CoverPage";
+import CatalogPage from "./CatalogPage";
+import { isCompactViewport, useCompactLayout } from "@/hooks/useCompactLayout";
+
+const order = [
+  "cover",
+  "map",
+  "timeline",
+  "land",
+  "folk",
+  "artifacts",
+  "routes",
+  "solar",
+];
+function readNavigation() {
+  try {
+    const [section, target] = window.location.hash
+      .slice(1)
+      .split("/")
+      .map(decodeURIComponent);
+    return {
+      section: order.includes(section) ? section : "cover",
+      target: target || undefined,
+      direction: 1,
+    };
+  } catch {
+    return { section: "cover", target: undefined, direction: 1 };
+  }
+}
 
 export default function Home() {
   const isCompactLayout = useCompactLayout();
-  const [activeNav, setActiveNav] = useState('cover');
-  const [selectedPoint, setSelectedPoint] = useState<CulturePoint | null>(() => (
+  const reducedMotion = useReducedMotion();
+  const [navigation, setNavigation] = useState(readNavigation);
+  const activeNav = navigation.section;
+  const scrollArea = useRef<HTMLDivElement>(null);
+  const scrollPositions = useRef<Record<string, number>>({});
+  const [selectedPoint, setSelectedPoint] = useState<CulturePoint | null>(() =>
     isCompactViewport() ? null : culturePoints[0]
-  ));
-  const [focusRequest, setFocusRequest] = useState<{ pointId: string; nonce: number } | null>(null);
-  const [activeRouteId, setActiveRouteId] = useState<ThemeRoute['id'] | null>(null);
-  const [activeRouteStopId, setActiveRouteStopId] = useState<string | null>(null);
+  );
+  const [focusRequest, setFocusRequest] = useState<{
+    pointId: string;
+    nonce: number;
+  } | null>(null);
+  const [activeRouteId, setActiveRouteId] = useState<ThemeRoute["id"] | null>(
+    null
+  );
+  const [activeRouteStopId, setActiveRouteStopId] = useState<string | null>(
+    null
+  );
   const [visibleLayers, setVisibleLayers] = useState({
     ancient: true,
     modern: true,
     red: true,
   });
 
-  const activeRoute = useMemo(
-    () => themeRoutes.find(route => route.id === activeRouteId) ?? null,
-    [activeRouteId],
+  const handleNavChange = useCallback(
+    (section: string, target?: string) => {
+      if (!order.includes(section)) return;
+      scrollPositions.current[activeNav] = scrollArea.current?.scrollTop || 0;
+      setNavigation(previous => ({
+        section,
+        target,
+        direction:
+          order.indexOf(section) >= order.indexOf(previous.section) ? 1 : -1,
+      }));
+      const url = new URL(window.location.href);
+      url.hash = section + (target ? "/" + encodeURIComponent(target) : "");
+      if (url.href !== window.location.href)
+        window.history.pushState(null, "", url);
+    },
+    [activeNav]
   );
 
-  const activeRoutePoints = useMemo(
-    () => activeRoute
-      ? activeRoute.points.flatMap(pointId => {
-          const point = culturePoints.find(item => item.id === pointId);
-          return point ? [point] : [];
-        })
-      : [],
-    [activeRoute],
-  );
-
-  const filteredPoints = useMemo(() => {
-    return culturePoints.filter(p => visibleLayers[p.category]);
-  }, [visibleLayers]);
-
-  const handleLayerToggle = useCallback((layer: 'ancient' | 'modern' | 'red') => {
-    const willHideLayer = visibleLayers[layer];
-    setVisibleLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
-    if (willHideLayer && selectedPoint?.category === layer) {
-      setSelectedPoint(null);
-      setFocusRequest(null);
-    }
-  }, [selectedPoint, visibleLayers]);
-
-  const focusPoint = useCallback((point: CulturePoint) => {
-    setActiveRouteId(null);
-    setActiveRouteStopId(null);
-    setSelectedPoint(point);
-    setFocusRequest(prev => ({ pointId: point.id, nonce: (prev?.nonce ?? 0) + 1 }));
+  useEffect(() => {
+    const restore = () => {
+      setNavigation(previous => {
+        const next = readNavigation();
+        if (
+          next.section === previous.section &&
+          next.target === previous.target
+        )
+          return previous;
+        return {
+          ...next,
+          direction:
+            order.indexOf(next.section) >= order.indexOf(previous.section)
+              ? 1
+              : -1,
+        };
+      });
+    };
+    window.addEventListener("popstate", restore);
+    window.addEventListener("hashchange", restore);
+    return () => {
+      window.removeEventListener("popstate", restore);
+      window.removeEventListener("hashchange", restore);
+    };
   }, []);
 
+  const activeRoute = useMemo(
+    () => themeRoutes.find(route => route.id === activeRouteId) || null,
+    [activeRouteId]
+  );
+  const activeRoutePoints = useMemo(
+    () =>
+      activeRoute
+        ? activeRoute.points.flatMap(id => {
+            const point = culturePoints.find(p => p.id === id);
+            return point ? [point] : [];
+          })
+        : [],
+    [activeRoute]
+  );
+  const filteredPoints = useMemo(
+    () => culturePoints.filter(point => visibleLayers[point.category]),
+    [visibleLayers]
+  );
   const clearActiveRoute = useCallback(() => {
     setActiveRouteId(null);
     setActiveRouteStopId(null);
   }, []);
-
   const clearSelection = useCallback(() => {
     setSelectedPoint(null);
     setFocusRequest(null);
   }, []);
-
-  const previousCompactLayoutRef = useRef(isCompactLayout);
+  const focusPoint = useCallback(
+    (point: CulturePoint) => {
+      clearActiveRoute();
+      setSelectedPoint(point);
+      setFocusRequest(previous => ({
+        pointId: point.id,
+        nonce: (previous?.nonce || 0) + 1,
+      }));
+    },
+    [clearActiveRoute]
+  );
+  const handleLayerToggle = useCallback(
+    (layer: "ancient" | "modern" | "red") => {
+      const hiding = visibleLayers[layer];
+      setVisibleLayers(previous => ({
+        ...previous,
+        [layer]: !previous[layer],
+      }));
+      if (hiding && selectedPoint?.category === layer) clearSelection();
+    },
+    [visibleLayers, selectedPoint, clearSelection]
+  );
+  const previousCompactLayout = useRef(isCompactLayout);
   useEffect(() => {
-    if (isCompactLayout && !previousCompactLayoutRef.current) {
-      clearSelection();
-    }
-    previousCompactLayoutRef.current = isCompactLayout;
-  }, [clearSelection, isCompactLayout]);
-
-  const handlePointSelect = useCallback((point: CulturePoint) => {
-    focusPoint(point);
-  }, [focusPoint]);
-
-  const handleSearch = useCallback((query: string) => {
-    if (!query.trim()) return;
-    const found = culturePoints.find(p =>
-      p.name.includes(query) || p.tags.some(t => t.includes(query))
-    );
-    if (found) {
-      setVisibleLayers(prev => ({ ...prev, [found.category]: true }));
-      setActiveNav('map');
-      focusPoint(found);
-    } else {
-      toast('未找到匹配的点位', { description: '请尝试其他关键词' });
-    }
-  }, [focusPoint]);
-
+    if (isCompactLayout && !previousCompactLayout.current) clearSelection();
+    previousCompactLayout.current = isCompactLayout;
+  }, [isCompactLayout, clearSelection]);
+  const handlePointJump = useCallback(
+    (id: string) => {
+      const point = culturePoints.find(p => p.id === id);
+      if (!point) return;
+      setVisibleLayers(previous => ({ ...previous, [point.category]: true }));
+      handleNavChange("map");
+      focusPoint(point);
+    },
+    [handleNavChange, focusPoint]
+  );
+  const handleSearch = useCallback(
+    (query: string) => {
+      if (!query.trim()) return;
+      const point = culturePoints.find(
+        p =>
+          p.name.includes(query.trim()) ||
+          p.tags.some(tag => tag.includes(query.trim()))
+      );
+      if (point) handlePointJump(point.id);
+      else toast("未找到匹配的点位", { description: "请尝试其他关键词" });
+    },
+    [handlePointJump]
+  );
   const handleClear = useCallback(() => {
     setVisibleLayers({ ancient: true, modern: true, red: true });
     clearActiveRoute();
     clearSelection();
   }, [clearActiveRoute, clearSelection]);
-
-  const handlePrevPoint = useCallback(() => {
-    if (!selectedPoint || filteredPoints.length === 0) return;
-    const currentIndex = filteredPoints.findIndex(p => p.id === selectedPoint.id);
-    const prevIndex = currentIndex <= 0 ? filteredPoints.length - 1 : currentIndex - 1;
-    focusPoint(filteredPoints[prevIndex]);
-  }, [selectedPoint, filteredPoints, focusPoint]);
-
-  const handleNextPoint = useCallback(() => {
-    if (!selectedPoint || filteredPoints.length === 0) return;
-    const currentIndex = filteredPoints.findIndex(p => p.id === selectedPoint.id);
-    const nextIndex = currentIndex < 0 || currentIndex >= filteredPoints.length - 1 ? 0 : currentIndex + 1;
-    focusPoint(filteredPoints[nextIndex]);
-  }, [selectedPoint, filteredPoints, focusPoint]);
-
-  const handleNavChange = useCallback((nav: string) => {
-    setActiveNav(nav);
-  }, []);
-
-  const handleBackToMap = useCallback(() => {
-    setActiveNav('map');
-  }, []);
-
-  const handleBottomPointSelect = useCallback((pointId: string) => {
-    const point = culturePoints.find(p => p.id === pointId);
-    if (point) {
-      setVisibleLayers(prev => ({ ...prev, [point.category]: true }));
-      setActiveNav('map');
-      focusPoint(point);
-    }
-  }, [focusPoint]);
-
-  const handleRouteSelect = useCallback((routeId: ThemeRoute['id'], pointId?: string) => {
-    const route = themeRoutes.find(item => item.id === routeId);
-    if (!route) return;
-    const routePoints = route.points.flatMap(id => {
-      const point = culturePoints.find(item => item.id === id);
-      return point ? [point] : [];
-    });
-    setVisibleLayers(prev => ({
-      ancient: prev.ancient || routePoints.some(point => point.category === 'ancient'),
-      modern: prev.modern || routePoints.some(point => point.category === 'modern'),
-      red: prev.red || routePoints.some(point => point.category === 'red'),
-    }));
-    setSelectedPoint(null);
-    setFocusRequest(null);
-    setActiveRouteId(route.id);
-    setActiveRouteStopId(pointId ?? null);
-    setActiveNav('map');
-  }, []);
-
-  const handleRouteStopSelect = useCallback((pointId: string) => {
-    setSelectedPoint(null);
-    setFocusRequest(null);
-    setActiveRouteStopId(pointId);
-  }, []);
-
-  if (activeNav === 'cover') return <CoverPage onEnter={() => setActiveNav('map')} />;
+  const stepPoint = (direction: number) => {
+    if (!selectedPoint || !filteredPoints.length) return;
+    const index = filteredPoints.findIndex(
+      point => point.id === selectedPoint.id
+    );
+    focusPoint(
+      filteredPoints[
+        (index + direction + filteredPoints.length) % filteredPoints.length
+      ]
+    );
+  };
+  const handleRouteSelect = useCallback(
+    (id: string, pointId?: string) => {
+      const route = themeRoutes.find(r => r.id === id);
+      if (!route) return;
+      const points = culturePoints.filter(p => route.points.includes(p.id));
+      setVisibleLayers(previous => ({
+        ancient: previous.ancient || points.some(p => p.category === "ancient"),
+        modern: previous.modern || points.some(p => p.category === "modern"),
+        red: previous.red || points.some(p => p.category === "red"),
+      }));
+      clearSelection();
+      setActiveRouteId(route.id);
+      setActiveRouteStopId(pointId || null);
+      handleNavChange("map");
+    },
+    [clearSelection, handleNavChange]
+  );
+  const backToMap = () => handleNavChange("map");
+  const currentName =
+    chapters.find(chapter => chapter.id === activeNav)?.name ||
+    (activeNav === "routes"
+      ? "主题线路"
+      : activeNav === "solar"
+        ? "二十四节气"
+        : "封面");
 
   return (
-    <div className="h-[100dvh] min-h-[100svh] flex flex-col bg-background overflow-hidden">
-      <Header
-        activeNav={activeNav}
-        onNavChange={handleNavChange}
-        onSearch={handleSearch}
-      />
-
-      <AnimatePresence mode="wait">
-        {activeNav === 'map' && (
-          <motion.div
-            key="map"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="flex-1 flex flex-col min-h-0 overflow-hidden"
-          >
-            {/* Main map area */}
-            <main className="relative flex-1 min-h-0 overflow-hidden">
-              <HunanMap
-                points={filteredPoints}
-                selectedPoint={selectedPoint}
-                focusRequest={focusRequest}
-                onPointSelect={handlePointSelect}
-                visibleLayers={visibleLayers}
-                activeRoute={activeRoute}
-                routePoints={activeRoutePoints}
-                activeRouteStopId={activeRouteStopId}
-                onRouteStopSelect={handleRouteStopSelect}
-                onRouteExit={clearActiveRoute}
+    <div className="culture-app h-[100dvh] min-h-[100svh] flex flex-col overflow-hidden">
+      {activeNav !== "cover" && (
+        <Header
+          activeNav={activeNav === "solar" ? "folk" : activeNav}
+          onNavChange={handleNavChange}
+          onSearch={handleSearch}
+        />
+      )}
+      <AnimatePresence
+        mode="wait"
+        initial={false}
+        custom={navigation.direction}
+      >
+        <motion.div
+          key={`${activeNav}:${navigation.target || ""}`}
+          ref={scrollArea}
+          custom={navigation.direction}
+          className={
+            activeNav === "map"
+              ? "culture-page-transition flex-1 min-h-0 flex flex-col overflow-hidden"
+              : "culture-page-transition flex-1 min-h-0 overflow-y-auto"
+          }
+          aria-label={`${currentName}页面`}
+          variants={{
+            enter: (d: number) => ({
+              opacity: 0,
+              x: reducedMotion ? 0 : d * 26,
+              y: reducedMotion ? 0 : 8,
+            }),
+            visible: { opacity: 1, x: 0, y: 0 },
+            leave: (d: number) => ({
+              opacity: 0,
+              x: reducedMotion ? 0 : -d * 18,
+              y: reducedMotion ? 0 : -5,
+            }),
+          }}
+          initial="enter"
+          animate="visible"
+          exit="leave"
+          transition={{
+            duration: reducedMotion ? 0 : 0.3,
+            ease: [0.23, 1, 0.32, 1],
+          }}
+          onAnimationComplete={definition => {
+            if (
+              definition === "visible" &&
+              scrollArea.current &&
+              !navigation.target
+            )
+              scrollArea.current.scrollTop =
+                scrollPositions.current[activeNav] || 0;
+          }}
+        >
+          {activeNav === "cover" && <CoverPage onEnter={backToMap} />}
+          {activeNav === "map" && (
+            <>
+              <main className="relative flex-1 min-h-0 overflow-hidden">
+                <HunanMap
+                  points={filteredPoints}
+                  selectedPoint={selectedPoint}
+                  focusRequest={focusRequest}
+                  onPointSelect={focusPoint}
+                  visibleLayers={visibleLayers}
+                  activeRoute={activeRoute}
+                  routePoints={activeRoutePoints}
+                  activeRouteStopId={activeRouteStopId}
+                  onRouteStopSelect={id => {
+                    clearSelection();
+                    setActiveRouteStopId(id);
+                  }}
+                  onRouteExit={clearActiveRoute}
+                />
+                <LayerPanel
+                  visibleLayers={visibleLayers}
+                  onLayerToggle={handleLayerToggle}
+                  onSearch={handleSearch}
+                  onClear={handleClear}
+                />
+                <PointDetail
+                  point={selectedPoint}
+                  onClose={clearSelection}
+                  onPrev={() => stepPoint(-1)}
+                  onNext={() => stepPoint(1)}
+                />
+              </main>
+              <BottomModules
+                onNavigate={handleNavChange}
+                onRouteSelect={handleRouteSelect}
               />
-
-              <LayerPanel
-                visibleLayers={visibleLayers}
-                onLayerToggle={handleLayerToggle}
-                onSearch={handleSearch}
-                onClear={handleClear}
-              />
-
-              <PointDetail
-                point={selectedPoint}
-                onClose={clearSelection}
-                onPrev={handlePrevPoint}
-                onNext={handleNextPoint}
-              />
-            </main>
-
-            {/* Bottom content modules */}
-            <BottomModules
+              <Footer />
+            </>
+          )}
+          {(activeNav === "land" || activeNav === "folk") && (
+            <CatalogPage
+              title={activeNav === "land" ? "土地制度" : "民俗文化"}
+              introduction={introCopy[activeNav]}
+              items={activeNav === "land" ? landItems : folkItems}
+              kind={activeNav}
+              onBack={backToMap}
               onNavigate={handleNavChange}
-              onPointSelect={handleBottomPointSelect}
-              onRouteSelect={handleRouteSelect}
+              initialTarget={navigation.target}
             />
-
-            {/* Footer */}
-            <Footer />
-          </motion.div>
-        )}
-
-        {(activeNav === 'land' || activeNav === 'folk') && (
-          <motion.div key={activeNav} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 min-h-0 overflow-y-auto">
-            <CatalogPage key={activeNav} title={activeNav === 'land' ? '土地制度' : '民俗文化'}
-              introduction={activeNav === 'land' ? introCopy.land : introCopy.folk}
-              items={activeNav === 'land' ? landItems : folkItems} onBack={handleBackToMap}
-              kind={activeNav === 'land' ? 'land' : 'folk'} />
-          </motion.div>
-        )}
-        {activeNav === 'artifacts' && (
-          <motion.div
-            key="artifacts"
-            initial={{ opacity: 0, y: 14, scale: 0.995 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.995 }}
-            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-            className="flex-1 overflow-y-auto"
-          >
-            <ArtifactsPage onBack={handleBackToMap} />
-          </motion.div>
-        )}
-
-        {activeNav === 'timeline' && (
-          <motion.div
-            key="timeline"
-            initial={{ opacity: 0, y: 14, scale: 0.995 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.995 }}
-            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-            className="flex-1 overflow-y-auto"
-          >
-            <TimelinePage onBack={handleBackToMap} />
-          </motion.div>
-        )}
-
-        {activeNav === 'routes' && (
-          <motion.div
-            key="routes"
-            initial={{ opacity: 0, y: 14, scale: 0.995 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.995 }}
-            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-            className="flex-1 overflow-y-auto"
-          >
-            <RoutesPage onBack={handleBackToMap} onRouteSelect={handleRouteSelect} />
-          </motion.div>
-        )}
-
-        {activeNav === 'solar' && (
-          <motion.div
-            key="solar"
-            initial={{ opacity: 0, y: 14, scale: 0.995 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.995 }}
-            transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
-            className="flex-1 overflow-y-auto"
-          >
-            <SolarTermsPage onBack={handleBackToMap} />
-          </motion.div>
-        )}
+          )}
+          {activeNav === "artifacts" && (
+            <ArtifactsPage
+              onBack={backToMap}
+              onNavigate={handleNavChange}
+              initialTarget={navigation.target}
+            />
+          )}
+          {activeNav === "timeline" && (
+            <TimelinePage
+              onBack={backToMap}
+              onNavigate={handleNavChange}
+              initialTarget={navigation.target}
+              onPointSelect={handlePointJump}
+            />
+          )}
+          {activeNav === "routes" && (
+            <RoutesPage onBack={backToMap} onRouteSelect={handleRouteSelect} />
+          )}
+          {activeNav === "solar" && (
+            <SolarTermsPage
+              onBack={backToMap}
+              initialTarget={navigation.target}
+            />
+          )}
+        </motion.div>
       </AnimatePresence>
     </div>
   );

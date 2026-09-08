@@ -53,11 +53,12 @@ const seasonMeta: Record<string, { label: string; color: string; wash: string; l
 
 interface SolarTermsPageProps {
   onBack: () => void;
+  initialTarget?: string;
 }
 
-export default function SolarTermsPage({ onBack }: SolarTermsPageProps) {
+export default function SolarTermsPage({ onBack, initialTarget }: SolarTermsPageProps) {
   const [activeSeason, setActiveSeason] = useState('all');
-  const [selectedTerm, setSelectedTerm] = useState<typeof solarTerms[0] | null>(null);
+  const [selectedTerm, setSelectedTerm] = useState<typeof solarTerms[0] | null>(() => solarTerms.find(term => term.id === initialTarget) || null);
 
   const seasons = [
     { id: 'all', label: '全部节气', color: '#8B6914' },

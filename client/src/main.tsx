@@ -4,4 +4,6 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-import './culture.css';
+import "./culture.css";
+
+import "./culture-refinement.css";

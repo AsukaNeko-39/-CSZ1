@@ -8,6 +8,13 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { assetUrl } from "@/lib/assets";
+import { motion, useReducedMotion } from "framer-motion";
+import {
+  ChapterSwitch,
+  SectionJourney,
+  sceneryStyle,
+  type NavigateCulture,
+} from "@/components/CultureScenery";
 import type { CatalogItem } from "@/data/catalog";
 
 interface Props {
@@ -16,13 +23,19 @@ interface Props {
   items: CatalogItem[];
   onBack: () => void;
   kind: "land" | "folk" | "artifacts";
+  initialTarget?: string;
+  onNavigate?: NavigateCulture;
 }
 
 export function SectionHeading({
   title,
   introduction,
   onBack,
-}: Pick<Props, "title" | "introduction" | "onBack">) {
+  kind = "timeline",
+  onNavigate,
+}: Pick<Props, "title" | "introduction" | "onBack" | "onNavigate"> & {
+  kind?: string;
+}) {
   return (
     <>
       <div className="culture-subnav">
@@ -31,13 +44,9 @@ export function SectionHeading({
           返回地图
         </button>
         <span>{title}</span>
+        <ChapterSwitch current={kind} onNavigate={onNavigate} />
       </div>
-      <section
-        className="culture-section-hero"
-        style={{
-          backgroundImage: `linear-gradient(rgba(250,247,239,.38),rgba(250,247,239,.38)),url(${assetUrl("/manus-storage/artifacts-hero-bg.webp")})`,
-        }}
-      >
+      <section className="culture-section-hero">
         <p className="culture-overline">湖湘农耕文化</p>
         <h1>{title}</h1>
         <p>{introduction}</p>
@@ -52,10 +61,17 @@ export default function CatalogPage({
   items,
   onBack,
   kind,
+  initialTarget,
+  onNavigate,
 }: Props) {
-  const [category, setCategory] = useState("全部");
+  const [category, setCategory] = useState(() =>
+    initialTarget?.startsWith("category:") ? initialTarget.slice(9) : "全部"
+  );
+  const reduceMotion = useReducedMotion();
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<CatalogItem | null>(null);
+  const [selected, setSelected] = useState<CatalogItem | null>(
+    () => items.find(item => item.id === initialTarget) || null
+  );
   const categories = useMemo(
     () => ["全部", ...Array.from(new Set(items.map(item => item.category)))],
     [items]
@@ -80,13 +96,36 @@ export default function CatalogPage({
   );
 
   return (
-    <main className={`culture-catalog culture-catalog--${kind}`}>
+    <main
+      className={`culture-catalog culture-catalog--${kind}`}
+      style={sceneryStyle(
+        kind === "folk" ? "routes-hero-bg.webp" : "artifacts-hero-bg.webp"
+      )}
+    >
       <SectionHeading
         title={title}
         introduction={introduction}
         onBack={onBack}
+        kind={kind}
+        onNavigate={onNavigate}
       />
       <div className="culture-catalog-inner">
+        {kind === "folk" && onNavigate && (
+          <button
+            className="culture-solar-banner"
+            onClick={() => onNavigate("solar")}
+          >
+            <img
+              src={assetUrl("/manus-storage/solar-terms/st-guyu.webp")}
+              alt=""
+            />
+            <span>
+              <strong>二十四节气与湖湘农事</strong>
+              <small>循四时物候，读春生、夏长、秋收、冬藏</small>
+            </span>
+            <ArrowUpRight size={22} />
+          </button>
+        )}
         <div className="culture-filter-bar">
           <div className="culture-categories" aria-label={`${title}分类`}>
             {categories.map(name => (
@@ -114,7 +153,14 @@ export default function CatalogPage({
         </div>
         <div className="culture-cards">
           {visible.map((item, index) => (
-            <button
+            <motion.button
+              initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.08 }}
+              transition={{
+                duration: reduceMotion ? 0 : 0.4,
+                delay: Math.min(index % 3, 2) * 0.04,
+              }}
               key={item.id}
               className={`culture-card ${item.images.length ? "" : "culture-card--text"}`}
               onClick={() => setSelected(item)}
@@ -127,6 +173,9 @@ export default function CatalogPage({
                     alt={item.images[0].caption}
                     loading="lazy"
                   />
+                  <span className="culture-image-peek">
+                    翻阅图文 <ArrowUpRight size={16} />
+                  </span>
                 </div>
               ) : (
                 <div className="culture-text-motif">
@@ -148,7 +197,7 @@ export default function CatalogPage({
                   </span>
                 </div>
               </div>
-            </button>
+            </motion.button>
           ))}
         </div>
         {visible.length === 0 && (
@@ -168,6 +217,7 @@ export default function CatalogPage({
           </div>
         )}
       </div>
+      <SectionJourney current={kind} onNavigate={onNavigate} />
       <Dialog
         open={selected !== null}
         onOpenChange={open => {
@@ -199,7 +249,12 @@ export default function CatalogPage({
                 {selected.images.length > 0 && (
                   <div className="culture-detail-gallery">
                     {selected.images.map(img => (
-                      <figure key={img.src}>
+                      <figure
+                        key={img.src}
+                        style={{
+                          backgroundImage: `linear-gradient(#faf5e3a6,#ede2c999),url("${assetUrl("/manus-storage/bottom-field-decor.webp")}")`,
+                        }}
+                      >
                         <a
                           href={assetUrl(img.src)}
                           target="_blank"
