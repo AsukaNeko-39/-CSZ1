@@ -205,7 +205,7 @@ export default function TimelinePage({
               <div className="culture-era-body">
                 <div className="era-page-heading">
                   <p className="culture-overline">
-                    CHAPTER {String(index + 1).padStart(2, "0")} / 湖湘农耕文化
+                    第 {String(index + 1).padStart(2, "0")} 章 · 湖湘农耕文化
                   </p>
                   <h2>{item.title}</h2>
                 </div>

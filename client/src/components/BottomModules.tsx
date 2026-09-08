@@ -57,8 +57,8 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
     >
       <div className="dock-section dock-routes">
         <DockHeading
-          title="主题线路"
-          more="全部"
+          title="地图浏览"
+          more="主题线路"
           onClick={() => onNavigate("routes")}
         />
         <div className="dock-route-grid">
@@ -128,8 +128,8 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
       </div>
       <div className="dock-section dock-folk">
         <DockHeading
-          title="民俗与四时"
-          more="民俗文化"
+          title="民俗文化"
+          more="全部"
           onClick={() => onNavigate("folk")}
         />
         <div className="dock-term-grid">
