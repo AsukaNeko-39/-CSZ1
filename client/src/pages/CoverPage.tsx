@@ -22,7 +22,6 @@ export default function CoverPage({ onEnter }: { onEnter: () => void }) {
           <h1>
             湖湘<span>农耕文化</span>
           </h1>
-          <p className="cover-lead">农耕文化是耕地保护的力量源泉</p>
           <div className="cover-introduction">
             {introCopy.cover.map(text => (
               <p key={text}>{text}</p>
