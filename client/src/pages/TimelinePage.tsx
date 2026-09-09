@@ -19,7 +19,7 @@ import { culturePoints } from "@/data/points";
 import { assetUrl } from "@/lib/assets";
 import { SectionHeading } from "./CatalogPage";
 import BookReader from "@/components/BookReader";
-import ChartMagnifier from "@/components/ChartMagnifier";
+import InteractiveChart from "@/components/InteractiveChart";
 import {
   SectionJourney,
   sceneryStyle,
@@ -236,16 +236,13 @@ export default function TimelinePage({
             放大查看
           </button>
         </div>
-        <ChartMagnifier
+        <InteractiveChart
           src={chart}
           onOpen={() => {
             setZoom(1);
             setChartOpen(true);
           }}
         />
-        <p id="culture-chart-hint" className="culture-chart-hint">
-          <span>鼠标悬停，在图外放大细览 · </span>点击图片可展开查看完整脉络
-        </p>
       </section>
       <SectionJourney current="timeline" onNavigate={onNavigate} />
       <Dialog open={chartOpen} onOpenChange={setChartOpen}>
