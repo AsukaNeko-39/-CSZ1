@@ -1,5 +1,6 @@
+import { sceneryStyle } from "@/components/CultureScenery";
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, CalendarDays, Sprout, X } from 'lucide-react';
 import { assetUrl, hideBrokenImage } from '@/lib/assets';
 
@@ -57,6 +58,7 @@ interface SolarTermsPageProps {
 }
 
 export default function SolarTermsPage({ onBack, initialTarget }: SolarTermsPageProps) {
+  const reducedMotion = useReducedMotion();
   const [activeSeason, setActiveSeason] = useState('all');
   const [selectedTerm, setSelectedTerm] = useState<typeof solarTerms[0] | null>(() => solarTerms.find(term => term.id === initialTarget) || null);
 
@@ -73,7 +75,7 @@ export default function SolarTermsPage({ onBack, initialTarget }: SolarTermsPage
     : solarTerms.filter(t => t.season === activeSeason);
 
   return (
-    <div className="min-h-screen text-[#3d3324]" style={{ background: 'linear-gradient(180deg, #fbf9f3 0%, #f1eadc 100%)' }}>
+    <div className="culture-auxiliary text-[#3d3324]" style={sceneryStyle("routes-hero-bg.webp")}>
       {/* Header */}
       <div className="sticky top-0 z-50 backdrop-blur-xl border-b border-gold/15" style={{ background: 'rgba(250,248,242,0.92)' }}>
         <div className="max-w-[1400px] mx-auto px-6 py-3 flex items-center justify-between">
@@ -136,10 +138,10 @@ export default function SolarTermsPage({ onBack, initialTarget }: SolarTermsPage
                 type="button"
                 key={term.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3, delay: idx * 0.03 }}
+                initial={{ opacity: 0, scale: reducedMotion ? 1 : .985 }}
+                animate={{ opacity: 1, scale: 1, transition: { duration: reducedMotion ? 0 : .28, delay: reducedMotion ? 0 : Math.min(idx, 5) * .025 } }}
+                exit={{ opacity: 0, transition: { duration: reducedMotion ? 0 : .14, delay: 0 } }}
+                transition={{ layout: { duration: reducedMotion ? 0 : .28 } }}
                 className="group text-left"
                 onClick={() => setSelectedTerm(term)}
                 aria-label={`查看${term.name}节气详情`}

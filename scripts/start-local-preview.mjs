@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const address = 'http://127.0.0.1:3000/';
+const welcomeAddress = address + '#cover';
 const sourceFile = path.join(root, 'client/src/components/BottomModules.tsx').replaceAll('\\', '/');
 const vite = path.join(root, 'node_modules/vite/bin/vite.js');
 
@@ -48,11 +49,11 @@ async function main() {
     }
     if (status !== 'this-project') throw new Error('本地启动未完成，请查看日志：' + logFile);
   }
-  console.log('本地最新版已就绪：' + address);
+  console.log('本地欢迎页已就绪：' + welcomeAddress);
   console.log('项目目录：' + root);
   if (!process.argv.includes('--no-open')) {
-    execFile('cmd.exe', ['/d', '/s', '/c', 'start "" "' + address + '"'], { windowsHide: true }, error => {
-      if (error) console.error('请在浏览器打开：' + address);
+    execFile('cmd.exe', ['/d', '/s', '/c', 'start "" "' + welcomeAddress + '"'], { windowsHide: true }, error => {
+      if (error) console.error('请在浏览器打开：' + welcomeAddress);
     });
   }
 }

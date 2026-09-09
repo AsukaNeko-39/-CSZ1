@@ -2,11 +2,69 @@
 .culture-app {
   background: #f4ecda;
 }
-.culture-page-transition {
+.culture-stage {
   position: relative;
+  isolation: isolate;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #f4ecda;
+}
+.culture-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--culture-scene) center/cover;
+  opacity: 0.25;
+}
+.culture-page-transition {
+  position: absolute;
+  inset: 0;
+  overscroll-behavior: contain;
+}
+
+.culture-page-enter {
+  z-index: 2;
+  animation: culture-page-enter 380ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.culture-page-leave {
+  z-index: 1;
+  pointer-events: none;
+  animation: culture-page-leave 180ms ease-in both;
+}
+@keyframes culture-page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(calc(var(--page-direction) * 12px), 4px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes culture-page-leave {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(calc(var(--page-direction) * -6px), 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .culture-page-enter,
+  .culture-page-leave {
+    animation: none;
+  }
+  .culture-page-leave {
+    visibility: hidden;
+  }
 }
 .culture-catalog,
-.culture-timeline {
+.culture-timeline,
+.culture-auxiliary {
   position: relative;
   isolation: isolate;
   min-height: 100%;
@@ -14,7 +72,8 @@
   background: #f5efdf;
 }
 .culture-catalog::before,
-.culture-timeline::before {
+.culture-timeline::before,
+.culture-auxiliary::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -41,7 +100,8 @@
   mask-repeat: repeat-y;
 }
 .culture-catalog::after,
-.culture-timeline::after {
+.culture-timeline::after,
+.culture-auxiliary::after {
   content: "";
   pointer-events: none;
   position: absolute;
@@ -503,11 +563,12 @@
   isolation: isolate;
   flex-shrink: 0;
   display: grid;
-  grid-template-columns: 1.08fr 1.18fr 0.82fr 0.87fr 1.12fr;
+  grid-template-columns: 1.08fr 1.1fr 1.03fr 0.87fr 1.22fr;
+  grid-template-rows: minmax(0, 1fr);
   background: #eee1bf;
   border-top: 1px solid #ab873f66;
   color: #493416;
-  height: 216px;
+  height: 228px;
 }
 .heritage-dock::before {
   content: "";
@@ -530,6 +591,9 @@
   background: linear-gradient(90deg, transparent, #b2904b66, transparent);
 }
 .dock-section {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding: 13px 14px;
   min-width: 0;
   border-right: 1px solid #a98a4c3b;
@@ -538,6 +602,7 @@
   border: 0;
 }
 .dock-heading {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -695,54 +760,8 @@
 }
 .dock-land-grid {
   display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 7px;
-}
-.dock-land-grid button {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  height: 43px;
-  border: 1px solid #af8f453d;
-  background: #fff7e359;
-  border-radius: 4px;
-  overflow: hidden;
-  text-align: left;
-  transition:
-    background 0.25s,
-    transform 0.25s;
-}
-.dock-land-grid img {
-  height: 100%;
-  width: 48px;
-  object-fit: cover;
-  transition: transform 0.45s;
-}
-.dock-land-grid span {
-  flex: 1;
-  min-width: 0;
-}
-.dock-land-grid small {
-  display: block;
-  font-size: 8px;
-  letter-spacing: 0.15em;
-  color: #957644;
-}
-.dock-land-grid strong {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-}
-.dock-land-grid svg {
-  margin-right: 8px;
-  opacity: 0.4;
-}
-.dock-land-grid button:hover {
-  transform: translateX(3px);
-  background: #fff6d9bb;
-}
-.dock-land-grid button:hover img {
-  transform: scale(1.1);
 }
 .dock-term-grid {
   display: grid;
@@ -788,49 +807,96 @@
 .dock-artifact-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 7px;
 }
-.dock-artifact-grid button {
+/* Shared full-object display for the home page previews. */
+.heritage-dock :is(.dock-land-grid, .dock-artifact-grid) {
+  flex: 1;
+  min-height: 0;
+}
+.heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button {
   position: relative;
-  height: 137px;
-  overflow: hidden;
-  border-radius: 5px;
-  border: 1px solid #fff6dd;
-  box-shadow: 0 3px 8px #68450c24;
-}
-.dock-artifact-grid img {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 38px;
+  min-width: 0;
   height: 100%;
-  width: 100%;
-  object-fit: cover;
-  transition: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1);
-}
-.dock-artifact-grid span {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  font-size: 10px;
-  color: #fff4dc;
-  padding: 19px 5px 7px;
-  background: linear-gradient(transparent, #392b16bf);
-  white-space: nowrap;
+  padding: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
+  border: 1px solid #b89a5e55;
+  border-radius: 5px;
+  background: #fff9eb99;
+  box-shadow: 0 2px 7px #68450c12;
+  transition:
+    transform 280ms ease,
+    border-color 280ms ease,
+    box-shadow 280ms ease;
 }
-.dock-artifact-grid svg {
+.heritage-dock :is(.dock-land-grid, .dock-artifact-grid) img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 5px;
+  object-fit: contain;
+  object-position: center;
+  transform: none;
+}
+.heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button > span {
+  display: flex;
+  position: static;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 3px 4px;
+  border-top: 1px solid #b59a6350;
+  background: #fcf5e3b3;
+  color: #594324;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+  overflow: hidden;
+}
+.dock-artifact-grid button > span {
+  text-wrap: balance;
+}
+.dock-land-grid small {
+  font-size: 8px;
+  color: #957644;
+  letter-spacing: 0.12em;
+}
+.dock-land-grid strong {
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button > svg {
   position: absolute;
-  top: 7px;
-  right: 7px;
-  color: white;
-  filter: drop-shadow(0 1px 3px #000);
+  top: 5px;
+  right: 5px;
+  padding: 2px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #fff9ebed;
+  color: #806335;
   opacity: 0;
-  transform: translate(-3px, 3px);
-  transition: 0.3s;
+  transform: translate(-2px, 2px);
+  transition:
+    transform 280ms ease,
+    opacity 280ms ease;
 }
-.dock-artifact-grid button:hover img {
-  transform: scale(1.1);
+.heritage-dock
+  :is(.dock-land-grid, .dock-artifact-grid)
+  button:is(:hover, :focus-visible) {
+  transform: translateY(-3px);
+  border-color: #987439;
+  box-shadow: 0 7px 14px #68450c24;
 }
-.dock-artifact-grid button:hover svg {
+.heritage-dock
+  :is(.dock-land-grid, .dock-artifact-grid)
+  button:is(:hover, :focus-visible)
+  > svg {
   opacity: 1;
   transform: none;
 }
@@ -1340,7 +1406,7 @@
 
 @media (min-width: 1700px) {
   .heritage-dock {
-    height: 232px;
+    height: 240px;
   }
   .dock-section {
     padding: 14px 18px;
@@ -1360,18 +1426,12 @@
   .dock-heading > button {
     font-size: 11px;
   }
-  .dock-artifact-grid button {
-    height: 157px;
-  }
   .dock-term-grid img {
     width: 42px;
     height: 42px;
   }
   .dock-term-grid button {
     font-size: 11px;
-  }
-  .dock-land-grid button {
-    height: 48px;
   }
   .dock-era-grid strong {
     font-size: 12px;
@@ -1381,9 +1441,20 @@
   }
 }
 @media (max-width: 1190px) and (min-width: 1024px) {
+  .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button {
+    grid-template-rows: minmax(0, 1fr) 48px;
+  }
+  .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button > span {
+    font-size: 9px;
+  }
+  .dock-land-grid strong {
+    font-size: 9px;
+    white-space: normal;
+  }
+
   .heritage-dock {
     grid-template-columns: 1fr 1.1fr 0.85fr 0.9fr 1fr;
-    height: 202px;
+    height: 214px;
   }
   .dock-section {
     padding: 11px 9px;
@@ -1420,20 +1491,25 @@
   .dock-artifact-grid {
     gap: 5px;
   }
-  .dock-artifact-grid button {
-    height: 123px;
-  }
   .dock-orb {
     width: 34px;
   }
 }
 @media (max-width: 1023px) {
   .heritage-dock {
+    background-image: linear-gradient(#eee1bf88, #eee1bf88), var(--culture-field);
+    background-position: center, center bottom;
+    background-size: auto, auto 100%;
+    background-attachment: scroll;
+
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    height: 182px;
+    height: 200px;
     scrollbar-width: thin;
+  }
+  .heritage-dock::before {
+    display: none;
   }
   .dock-section {
     flex: 0 0 280px;
@@ -1461,24 +1537,6 @@
   .dock-land-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-  }
-  .dock-land-grid button {
-    height: 112px;
-    display: block;
-  }
-  .dock-land-grid img {
-    width: 100%;
-    height: 64px;
-  }
-  .dock-land-grid span {
-    display: block;
-    padding: 3px 6px;
-  }
-  .dock-land-grid button > svg {
-    display: none;
-  }
-  .dock-artifact-grid button {
-    height: 117px;
   }
   .dock-folk-links {
     margin-top: 8px;
@@ -1523,7 +1581,7 @@
 }
 @media (max-width: 640px) {
   .heritage-dock {
-    height: 160px;
+    height: 184px;
   }
   .dock-section {
     flex-basis: 258px;
@@ -1558,15 +1616,6 @@
   }
   .dock-era-grid small {
     font-size: 8px;
-  }
-  .dock-land-grid button {
-    height: 97px;
-  }
-  .dock-land-grid img {
-    height: 53px;
-  }
-  .dock-artifact-grid button {
-    height: 103px;
   }
   .dock-term-grid img {
     width: 27px;
@@ -1718,7 +1767,7 @@
     border-radius: 8px;
   }
   .culture-era-visual {
-    height: 182px;
+    height: 200px;
   }
   .culture-era-visual > .era-stamp {
     left: 17px;

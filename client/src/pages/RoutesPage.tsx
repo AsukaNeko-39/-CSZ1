@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, MapPin, Clock, Route, ChevronRight } from 'lucide-react';
 import { assetUrl, hideBrokenImage } from '@/lib/assets';
 import { culturePoints, themeRoutes, type ThemeRoute } from '@/data/points';
@@ -30,6 +30,7 @@ interface RoutesPageProps {
 
 export default function RoutesPage({ onBack, onRouteSelect }: RoutesPageProps) {
   const [selectedRoute, setSelectedRoute] = useState<RouteCard | null>(null);
+  const reducedMotion = useReducedMotion();
   const [activeTheme, setActiveTheme] = useState('all');
 
   const themes = [
@@ -124,10 +125,10 @@ export default function RoutesPage({ onBack, onRouteSelect }: RoutesPageProps) {
                 key={route.id}
                 type="button"
                 layout
-                initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, delay: idx * 0.08 }}
+                initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }}
+                animate={{ opacity: 1, y: 0, transition: { duration: reducedMotion ? 0 : .32, delay: reducedMotion ? 0 : Math.min(idx, 4) * .035 } }}
+                exit={{ opacity: 0, transition: { duration: reducedMotion ? 0 : .14, delay: 0 } }}
+                transition={{ layout: { duration: reducedMotion ? 0 : .28 } }}
                 className="group cursor-pointer text-left"
                 onClick={() => setSelectedRoute(route)}
                 aria-label={`查看路线：${route.name}`}

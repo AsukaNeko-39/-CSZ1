@@ -116,7 +116,12 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
               onClick={() => onNavigate("land", item.id)}
               aria-label={`查看${item.name}`}
             >
-              <img src={assetUrl(item.images[0].src)} alt="" loading="lazy" />
+              <img
+                src={assetUrl(item.images[0].src)}
+                alt={item.images[0].caption || item.name}
+                loading="lazy"
+                decoding="async"
+              />
               <span>
                 <small>{["溯源", "沿革", "新篇"][index]}</small>
                 <strong>{["商周田制", "秦汉田制", "新中国田制"][index]}</strong>
@@ -178,7 +183,12 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
               onClick={() => onNavigate("artifacts", item.id)}
               aria-label={`查看${item.name}`}
             >
-              <img src={assetUrl(item.images[0].src)} alt="" loading="lazy" />
+              <img
+                src={assetUrl(item.images[0].src)}
+                alt={item.images[0].caption || item.name}
+                loading="lazy"
+                decoding="async"
+              />
               <span>{item.name.split("（")[0]}</span>
               <ArrowUpRight size={16} />
             </button>

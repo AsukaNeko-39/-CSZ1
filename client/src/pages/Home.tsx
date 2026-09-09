@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import CulturePageTransition from "@/components/CulturePageTransition";
 import Header from "@/components/Header";
 import HunanMap from "@/components/HunanMap";
 import LayerPanel from "@/components/LayerPanel";
@@ -43,19 +43,32 @@ function readNavigation() {
       section: order.includes(section) ? section : "cover",
       target: target || undefined,
       direction: 1,
+      revision: 0,
     };
   } catch {
-    return { section: "cover", target: undefined, direction: 1 };
+    return { section: "cover", target: undefined, direction: 1, revision: 0 };
   }
 }
 
 export default function Home() {
   const isCompactLayout = useCompactLayout();
-  const reducedMotion = useReducedMotion();
   const [navigation, setNavigation] = useState(readNavigation);
   const activeNav = navigation.section;
   const scrollArea = useRef<HTMLDivElement>(null);
   const scrollPositions = useRef<Record<string, number>>({});
+  const attachScrollArea = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      scrollArea.current = node;
+      if (!navigation.target) {
+        node.scrollTo({
+          top: scrollPositions.current[activeNav] || 0,
+          behavior: "instant",
+        });
+      }
+    },
+    [activeNav, navigation.target]
+  );
   const [selectedPoint, setSelectedPoint] = useState<CulturePoint | null>(() =>
     isCompactViewport() ? null : culturePoints[0]
   );
@@ -77,11 +90,16 @@ export default function Home() {
 
   const handleNavChange = useCallback(
     (section: string, target?: string) => {
-      if (!order.includes(section)) return;
+      if (
+        !order.includes(section) ||
+        (section === activeNav && target === navigation.target)
+      )
+        return;
       scrollPositions.current[activeNav] = scrollArea.current?.scrollTop || 0;
       setNavigation(previous => ({
         section,
         target,
+        revision: previous.revision + 1,
         direction:
           order.indexOf(section) >= order.indexOf(previous.section) ? 1 : -1,
       }));
@@ -90,11 +108,12 @@ export default function Home() {
       if (url.href !== window.location.href)
         window.history.pushState(null, "", url);
     },
-    [activeNav]
+    [activeNav, navigation.target]
   );
 
   useEffect(() => {
     const restore = () => {
+      scrollPositions.current[activeNav] = scrollArea.current?.scrollTop || 0;
       setNavigation(previous => {
         const next = readNavigation();
         if (
@@ -104,6 +123,7 @@ export default function Home() {
           return previous;
         return {
           ...next,
+          revision: previous.revision + 1,
           direction:
             order.indexOf(next.section) >= order.indexOf(previous.section)
               ? 1
@@ -117,7 +137,7 @@ export default function Home() {
       window.removeEventListener("popstate", restore);
       window.removeEventListener("hashchange", restore);
     };
-  }, []);
+  }, [activeNav]);
 
   const activeRoute = useMemo(
     () => themeRoutes.find(route => route.id === activeRouteId) || null,
@@ -246,127 +266,96 @@ export default function Home() {
           onSearch={handleSearch}
         />
       )}
-      <AnimatePresence
-        mode="wait"
-        initial={false}
-        custom={navigation.direction}
-      >
-        <motion.div
-          key={`${activeNav}:${navigation.target || ""}`}
-          ref={scrollArea}
-          custom={navigation.direction}
-          className={
-            activeNav === "map"
-              ? "culture-page-transition flex-1 min-h-0 flex flex-col overflow-hidden"
-              : "culture-page-transition flex-1 min-h-0 overflow-y-auto"
-          }
-          aria-label={`${currentName}页面`}
-          variants={{
-            enter: (d: number) => ({
-              opacity: 0,
-              x: reducedMotion ? 0 : d * 26,
-              y: reducedMotion ? 0 : 8,
-            }),
-            visible: { opacity: 1, x: 0, y: 0 },
-            leave: (d: number) => ({
-              opacity: 0,
-              x: reducedMotion ? 0 : -d * 18,
-              y: reducedMotion ? 0 : -5,
-            }),
-          }}
-          initial="enter"
-          animate="visible"
-          exit="leave"
-          transition={{
-            duration: reducedMotion ? 0 : 0.3,
-            ease: [0.23, 1, 0.32, 1],
-          }}
-          onAnimationComplete={definition => {
-            if (
-              definition === "visible" &&
-              scrollArea.current &&
-              !navigation.target
-            )
-              scrollArea.current.scrollTop =
-                scrollPositions.current[activeNav] || 0;
-          }}
-        >
-          {activeNav === "cover" && <CoverPage onEnter={backToMap} />}
-          {activeNav === "map" && (
+      <CulturePageTransition
+        onCurrentRef={attachScrollArea}
+        scene={{
+          id: `${activeNav}:${navigation.target || ""}:${navigation.revision}`,
+          section: activeNav,
+          label: currentName,
+          direction: navigation.direction,
+          children: (
             <>
-              <main className="relative flex-1 min-h-0 overflow-hidden">
-                <HunanMap
-                  points={filteredPoints}
-                  selectedPoint={selectedPoint}
-                  focusRequest={focusRequest}
-                  onPointSelect={focusPoint}
-                  visibleLayers={visibleLayers}
-                  activeRoute={activeRoute}
-                  routePoints={activeRoutePoints}
-                  activeRouteStopId={activeRouteStopId}
-                  onRouteStopSelect={id => {
-                    clearSelection();
-                    setActiveRouteStopId(id);
-                  }}
-                  onRouteExit={clearActiveRoute}
+              {activeNav === "cover" && <CoverPage onEnter={backToMap} />}
+              {activeNav === "map" && (
+                <>
+                  <main className="relative flex-1 min-h-0 overflow-hidden">
+                    <HunanMap
+                      points={filteredPoints}
+                      selectedPoint={selectedPoint}
+                      focusRequest={focusRequest}
+                      onPointSelect={focusPoint}
+                      visibleLayers={visibleLayers}
+                      activeRoute={activeRoute}
+                      routePoints={activeRoutePoints}
+                      activeRouteStopId={activeRouteStopId}
+                      onRouteStopSelect={id => {
+                        clearSelection();
+                        setActiveRouteStopId(id);
+                      }}
+                      onRouteExit={clearActiveRoute}
+                    />
+                    <LayerPanel
+                      visibleLayers={visibleLayers}
+                      onLayerToggle={handleLayerToggle}
+                      onSearch={handleSearch}
+                      onClear={handleClear}
+                    />
+                    <PointDetail
+                      point={selectedPoint}
+                      onClose={clearSelection}
+                      onPrev={() => stepPoint(-1)}
+                      onNext={() => stepPoint(1)}
+                    />
+                  </main>
+                  <BottomModules
+                    onNavigate={handleNavChange}
+                    onRouteSelect={handleRouteSelect}
+                  />
+                  <Footer />
+                </>
+              )}
+              {(activeNav === "land" || activeNav === "folk") && (
+                <CatalogPage
+                  title={activeNav === "land" ? "土地制度" : "民俗文化"}
+                  introduction={introCopy[activeNav]}
+                  items={activeNav === "land" ? landItems : folkItems}
+                  kind={activeNav}
+                  onBack={backToMap}
+                  onNavigate={handleNavChange}
+                  initialTarget={navigation.target}
                 />
-                <LayerPanel
-                  visibleLayers={visibleLayers}
-                  onLayerToggle={handleLayerToggle}
-                  onSearch={handleSearch}
-                  onClear={handleClear}
+              )}
+              {activeNav === "artifacts" && (
+                <ArtifactsPage
+                  onBack={backToMap}
+                  onNavigate={handleNavChange}
+                  initialTarget={navigation.target}
                 />
-                <PointDetail
-                  point={selectedPoint}
-                  onClose={clearSelection}
-                  onPrev={() => stepPoint(-1)}
-                  onNext={() => stepPoint(1)}
+              )}
+              {activeNav === "timeline" && (
+                <TimelinePage
+                  onBack={backToMap}
+                  onNavigate={handleNavChange}
+                  initialTarget={navigation.target}
+                  onPointSelect={handlePointJump}
                 />
-              </main>
-              <BottomModules
-                onNavigate={handleNavChange}
-                onRouteSelect={handleRouteSelect}
-              />
-              <Footer />
+              )}
+              {activeNav === "routes" && (
+                <RoutesPage
+                  onBack={backToMap}
+                  onRouteSelect={handleRouteSelect}
+                />
+              )}
+              {activeNav === "solar" && (
+                <SolarTermsPage
+                  onBack={backToMap}
+                  initialTarget={navigation.target}
+                />
+              )}
             </>
-          )}
-          {(activeNav === "land" || activeNav === "folk") && (
-            <CatalogPage
-              title={activeNav === "land" ? "土地制度" : "民俗文化"}
-              introduction={introCopy[activeNav]}
-              items={activeNav === "land" ? landItems : folkItems}
-              kind={activeNav}
-              onBack={backToMap}
-              onNavigate={handleNavChange}
-              initialTarget={navigation.target}
-            />
-          )}
-          {activeNav === "artifacts" && (
-            <ArtifactsPage
-              onBack={backToMap}
-              onNavigate={handleNavChange}
-              initialTarget={navigation.target}
-            />
-          )}
-          {activeNav === "timeline" && (
-            <TimelinePage
-              onBack={backToMap}
-              onNavigate={handleNavChange}
-              initialTarget={navigation.target}
-              onPointSelect={handlePointJump}
-            />
-          )}
-          {activeNav === "routes" && (
-            <RoutesPage onBack={backToMap} onRouteSelect={handleRouteSelect} />
-          )}
-          {activeNav === "solar" && (
-            <SolarTermsPage
-              onBack={backToMap}
-              initialTarget={navigation.target}
-            />
-          )}
-        </motion.div>
-      </AnimatePresence>
+          ),
+        }}
+      />
     </div>
   );
 }
