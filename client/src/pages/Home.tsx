@@ -22,37 +22,22 @@ import SolarTermsPage from "./SolarTermsPage";
 import CoverPage from "./CoverPage";
 import CatalogPage from "./CatalogPage";
 import { isCompactViewport, useCompactLayout } from "@/hooks/useCompactLayout";
-
-const order = [
-  "cover",
-  "map",
-  "timeline",
-  "land",
-  "folk",
-  "artifacts",
-  "routes",
-  "solar",
-];
-function readNavigation() {
-  try {
-    const [section, target] = window.location.hash
-      .slice(1)
-      .split("/")
-      .map(decodeURIComponent);
-    return {
-      section: order.includes(section) ? section : "cover",
-      target: target || undefined,
-      direction: 1,
-      revision: 0,
-    };
-  } catch {
-    return { section: "cover", target: undefined, direction: 1, revision: 0 };
-  }
-}
+import { navigationOrder as order, readNavigation, getInitialNavigation, navigationHistoryState } from "@/lib/navigation";
 
 export default function Home() {
   const isCompactLayout = useCompactLayout();
-  const [navigation, setNavigation] = useState(readNavigation);
+  const [navigation, setNavigation] = useState(() => getInitialNavigation(
+    window.location.hash,
+    (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined)?.type,
+    window.history.state,
+  ));
+  const entryNavigation = useRef(navigation);
+  useEffect(() => {
+    const initial = entryNavigation.current;
+    const url = new URL(window.location.href);
+    url.hash = initial.section + (initial.target ? "/" + encodeURIComponent(initial.target) : "");
+    window.history.replaceState(navigationHistoryState(window.history.state), "", url);
+  }, []);
   const activeNav = navigation.section;
   const scrollArea = useRef<HTMLDivElement>(null);
   const scrollPositions = useRef<Record<string, number>>({});
@@ -106,7 +91,7 @@ export default function Home() {
       const url = new URL(window.location.href);
       url.hash = section + (target ? "/" + encodeURIComponent(target) : "");
       if (url.href !== window.location.href)
-        window.history.pushState(null, "", url);
+        window.history.pushState(navigationHistoryState(window.history.state), "", url);
     },
     [activeNav, navigation.target]
   );
@@ -115,7 +100,7 @@ export default function Home() {
     const restore = () => {
       scrollPositions.current[activeNav] = scrollArea.current?.scrollTop || 0;
       setNavigation(previous => {
-        const next = readNavigation();
+        const next = readNavigation(window.location.hash);
         if (
           next.section === previous.section &&
           next.target === previous.target

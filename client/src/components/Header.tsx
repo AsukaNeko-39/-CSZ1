@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 import { assetUrl } from '@/lib/assets';
 import { culturePoints } from '@/data/points';
 import { timeline, landItems, folkItems, artifactItems } from '@/data/catalog';
+import { getWelcomeUrl } from '@/lib/navigation';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 
 interface HeaderProps {
   activeNav: string;
@@ -22,15 +24,15 @@ const navItems = [
 export default function Header({ activeNav, onNavChange, onSearch }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [logoFailed, setLogoFailed] = useState(false);
+  const [manualShareUrl, setManualShareUrl] = useState('');
 
   const handleShare = async () => {
+    const url = getWelcomeUrl(window.location.href);
     try {
-      const response = await fetch('/__share-link');
-      const data = response.ok && response.headers.get('content-type')?.includes('application/json') ? await response.json() : null;
-      await navigator.clipboard.writeText(data?.url || window.location.href);
-      toast('分享链接已复制', { description: '将链接发给对方即可查看' });
+      await navigator.clipboard.writeText(url);
+      toast('欢迎页链接已复制', { description: '发给对方后，将从欢迎页开始浏览' });
     } catch {
-      toast('暂时无法复制', { description: '请使用收到的完整分享链接' });
+      setManualShareUrl(url);
     }
   };
 
@@ -155,6 +157,20 @@ export default function Header({ activeNav, onNavChange, onSearch }: HeaderProps
           <StatItem icon={<LeafIcon />} label="民俗文化" value={folkItems.length} unit="项" />
         </div>
       </div>
+      <Dialog open={!!manualShareUrl} onOpenChange={open => { if (!open) setManualShareUrl(''); }}>
+        <DialogContent showCloseButton={false} className="z-[1200] border-gold/20 bg-[#faf6ee] font-serif">
+          <DialogTitle>分享网站</DialogTitle>
+          <DialogDescription>请长按或选中下方链接复制，发送给对方后将从欢迎页开始浏览。</DialogDescription>
+          <input
+            aria-label="网站欢迎页链接"
+            value={manualShareUrl}
+            readOnly
+            onFocus={event => event.currentTarget.select()}
+            className="w-full min-w-0 rounded border border-gold/25 bg-white p-3 text-sm text-[#5c4a1e]"
+          />
+          <DialogClose className="justify-self-end rounded border border-gold/25 px-4 py-2 text-sm">关闭</DialogClose>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }

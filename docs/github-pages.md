@@ -1,18 +1,22 @@
 # GitHub 网页发布
 
+网站版本：CSZ1版。
+
 欢迎页入口：https://asukaneko-39.github.io/-CSZ1-pages/#cover
 
 公开网页仓库：https://github.com/AsukaNeko-39/-CSZ1-pages
 
 私有源码仓库：https://github.com/AsukaNeko-39/-CSZ1
 
-公开修改记录（PDF，29 页）：https://asukaneko-39.github.io/-CSZ1-pages/docs/modification-record.pdf
+公开修改记录（PDF，30 页）：https://asukaneko-39.github.io/-CSZ1-pages/docs/modification-record.pdf
 
 修改记录于 2026-09-09 按用户要求上传，文件与本地记录内容一致。
 
 2026-09-09 首页图栏更新：土地制度与重要文物图片贴齐外框，增加图片面积，逐张调整取景位置；方鼎主体加大，素纱单衣适度裁去两侧，竖版皿方罍用原图背景延展。图文卡保持等大对齐，详情页保留完整原图；修改记录追加前后对比图，共 29 页。
 
 源码仓库继续保持私有。当前账号无法从私有仓库发布 GitHub Pages，因此使用独立公开仓库存放编译后的网页文件和图片素材。页面本身不要求登录，可直接转发访问。搜索引擎禁索引设置不等于访问权限控制。
+
+2026-09-09 入口修复：外部新打开的链接即使带有栏目后缀，也先显示欢迎页；分享按钮复制欢迎页网址，复制权限受限时显示手动复制窗口。站内刷新和前进后退保留当前栏目。修改记录现为 30 页。
 
 ## 首次公开发布记录
 
