@@ -1068,25 +1068,52 @@
   outline: 2px solid #94702e;
   outline-offset: 5px;
 }
-.culture-chart-preview img {
+.culture-chart-preview > img {
   display: block;
   border-radius: inherit;
   user-select: none;
 }
 .culture-chart-lens {
   position: absolute;
+  left: 0;
+  top: 0;
   z-index: 2;
-  box-sizing: border-box;
-  border: 3px solid #b9944b;
+  visibility: hidden;
   border-radius: 50%;
-  background-color: #fffdf7;
-  background-repeat: no-repeat;
-  background-origin: border-box;
+  background: #fffdf7;
   box-shadow:
     0 8px 28px #33230d55,
-    0 0 0 4px #fff7dfb3,
-    inset 0 0 0 1px #fff2cc;
+    0 0 0 4px #fff7dfb3;
   pointer-events: none;
+  will-change: transform;
+}
+.culture-chart-lens[data-active="true"] {
+  visibility: visible;
+}
+.culture-chart-lens::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 3px solid #b9944b;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px #fff2cc;
+}
+.culture-chart-lens-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  contain: layout paint;
+}
+.culture-chart-preview .culture-chart-lens-image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  max-width: none;
+  border-radius: 0;
+  user-select: none;
+  will-change: transform;
 }
 .culture-chart-lens-label {
   position: absolute;
