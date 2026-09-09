@@ -6,6 +6,10 @@
 
 私有源码仓库：https://github.com/AsukaNeko-39/-CSZ1
 
+公开修改记录（PDF，27 页）：https://asukaneko-39.github.io/-CSZ1-pages/docs/modification-record.pdf
+
+修改记录于 2026-09-09 按用户要求上传，文件与本地记录内容一致。
+
 源码仓库继续保持私有。当前账号无法从私有仓库发布 GitHub Pages，因此使用独立公开仓库存放编译后的网页文件和图片素材。页面本身不要求登录，可直接转发访问。搜索引擎禁索引设置不等于访问权限控制。
 
 ## 本次发布
@@ -27,4 +31,4 @@ node node_modules/typescript/bin/tsc --noEmit
 node node_modules/vite/bin/vite.js build --base '/-CSZ1-pages/' --outDir '<独立发布目录>'
 ```
 
-公开仓库只上传构建输出及网页素材，不上传源码开发历史、本地需求文档、修改记录 PDF、凭据、依赖目录或 `.openai` 绑定。保留 `.nojekyll`、`404.html` 和禁索引设置。更新前核对欢迎页、五个专题、图片路径与手机布局，更新后再次核对公开网址。
+公开仓库上传构建输出、网页素材及用户要求公开的修改记录 PDF；不上传源码开发历史、本地需求文档、凭据、依赖目录或 `.openai` 绑定。更新网页时保留 `docs/modification-record.pdf`、`.nojekyll`、`404.html` 和禁索引设置。更新前核对欢迎页、五个专题、图片路径与手机布局，更新后再次核对公开网址。
