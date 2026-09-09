@@ -244,7 +244,7 @@ export default function TimelinePage({
           }}
         />
         <p id="culture-chart-hint" className="culture-chart-hint">
-          <span>鼠标悬停，放大细览 · </span>点击图片可展开查看完整脉络
+          <span>鼠标悬停，在图外放大细览 · </span>点击图片可展开查看完整脉络
         </p>
       </section>
       <SectionJourney current="timeline" onNavigate={onNavigate} />
