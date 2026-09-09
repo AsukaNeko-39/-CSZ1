@@ -6,9 +6,11 @@
 
 私有源码仓库：https://github.com/AsukaNeko-39/-CSZ1
 
-公开修改记录（PDF，27 页）：https://asukaneko-39.github.io/-CSZ1-pages/docs/modification-record.pdf
+公开修改记录（PDF，28 页）：https://asukaneko-39.github.io/-CSZ1-pages/docs/modification-record.pdf
 
 修改记录于 2026-09-09 按用户要求上传，文件与本地记录内容一致。
+
+2026-09-09 首页图栏更新：土地制度使用统一纸本展框，重要文物改为两行两列图文卡片。七张原图完整保留，组内展框和卡片尺寸对齐；修改记录追加前后对比图。
 
 源码仓库继续保持私有。当前账号无法从私有仓库发布 GitHub Pages，因此使用独立公开仓库存放编译后的网页文件和图片素材。页面本身不要求登录，可直接转发访问。搜索引擎禁索引设置不等于访问权限控制。
 

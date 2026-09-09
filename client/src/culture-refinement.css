@@ -806,10 +806,11 @@
 }
 .dock-artifact-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: 7px;
 }
-/* Shared full-object display for the home page previews. */
+/* Matching exhibition mounts preserve each source image's full proportions. */
 .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) {
   flex: 1;
   min-height: 0;
@@ -822,26 +823,45 @@
   height: 100%;
   padding: 0;
   overflow: hidden;
-  border: 1px solid #b89a5e55;
-  border-radius: 5px;
-  background: #fff9eb99;
-  box-shadow: 0 2px 7px #68450c12;
+  border: 1px solid #b89a5e66;
+  border-radius: 6px;
+  background: #faf4e5;
+  box-shadow: 0 2px 6px #68450c0e;
   transition:
     transform 280ms ease,
     border-color 280ms ease,
     box-shadow 280ms ease;
 }
-.heritage-dock :is(.dock-land-grid, .dock-artifact-grid) img {
+.heritage-dock .dock-preview-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px;
+  background: linear-gradient(145deg, #faf6eb, #eee4ce);
+  isolation: isolate;
+}
+.heritage-dock .dock-preview-frame::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  pointer-events: none;
+  border: 1px solid #bba57940;
+  border-radius: 2px;
+}
+.heritage-dock .dock-preview-frame img {
   display: block;
   width: 100%;
   height: 100%;
   min-height: 0;
-  padding: 5px;
+  padding: 0;
   object-fit: contain;
   object-position: center;
   transform: none;
 }
-.heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button > span {
+.heritage-dock .dock-preview-caption {
   display: flex;
   position: static;
   min-width: 0;
@@ -850,15 +870,35 @@
   flex-direction: column;
   padding: 3px 4px;
   border-top: 1px solid #b59a6350;
-  background: #fcf5e3b3;
+  background: #faf4e5;
   color: #594324;
   font-size: 10px;
   line-height: 1.4;
   text-align: center;
   overflow: hidden;
 }
-.dock-artifact-grid button > span {
+.heritage-dock .dock-artifact-grid .dock-preview-caption {
   text-wrap: balance;
+  border-top: 0;
+  padding: 5px 7px;
+  font-size: 11px;
+  line-height: 1.6;
+  font-weight: 500;
+  background: transparent;
+}
+.heritage-dock .dock-artifact-grid button {
+  grid-template-columns: 48% minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+}
+.heritage-dock .dock-artifact-grid .dock-preview-frame {
+  margin: 6px 0 6px 6px;
+  padding: 6px;
+  border: 1px solid #bba57940;
+  border-radius: 3px;
+}
+.heritage-dock .dock-artifact-grid .dock-preview-frame::before {
+  display: none;
 }
 .dock-land-grid small {
   font-size: 8px;
@@ -872,8 +912,8 @@
 }
 .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button > svg {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 4px;
+  right: 4px;
   padding: 2px;
   width: 19px;
   height: 19px;
@@ -1441,11 +1481,29 @@
   }
 }
 @media (max-width: 1190px) and (min-width: 1024px) {
+  .heritage-dock .dock-land-grid .dock-preview-frame {
+    padding: 6px;
+  }
+  .heritage-dock .dock-land-grid .dock-preview-frame::before {
+    inset: 3px;
+  }
   .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button {
     grid-template-rows: minmax(0, 1fr) 48px;
   }
-  .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button > span {
+  .heritage-dock .dock-preview-caption {
     font-size: 9px;
+  }
+  .heritage-dock .dock-artifact-grid button {
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .heritage-dock .dock-artifact-grid .dock-preview-caption {
+    padding: 3px;
+    font-size: 9px;
+    line-height: 1.5;
+  }
+  .heritage-dock .dock-artifact-grid .dock-preview-frame {
+    margin: 4px 0 4px 4px;
+    padding: 4px;
   }
   .dock-land-grid strong {
     font-size: 9px;
@@ -1865,6 +1923,11 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button,
+  .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button > svg {
+    transition: none !important;
+    transform: none !important;
+  }
   .culture-card,
   .culture-card img,
   .culture-primary,
