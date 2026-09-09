@@ -116,7 +116,7 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
               onClick={() => onNavigate("land", item.id)}
               aria-label={`查看${item.name}`}
             >
-              <span className="dock-preview-frame">
+              <span className={`dock-preview-frame dock-land-preview-${index}`}>
                 <img
                   src={assetUrl(item.images[0].src)}
                   alt={item.images[0].caption || item.name}
@@ -185,7 +185,10 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
               onClick={() => onNavigate("artifacts", item.id)}
               aria-label={`查看${item.name}`}
             >
-              <span className="dock-preview-frame">
+              <span
+                className={`dock-preview-frame dock-preview-${item.id}`}
+                style={item.id === "artifact-5" ? { backgroundImage: `url("${assetUrl(item.images[0].src)}")` } : undefined}
+              >
                 <img
                   src={assetUrl(item.images[0].src)}
                   alt={item.images[0].caption || item.name}

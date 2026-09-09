@@ -810,7 +810,7 @@
   grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: 7px;
 }
-/* Matching exhibition mounts preserve each source image's full proportions. */
+/* Edge-to-edge previews with individual framing; detail pages retain originals. */
 .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) {
   flex: 1;
   min-height: 0;
@@ -839,25 +839,23 @@
   justify-content: center;
   min-width: 0;
   min-height: 0;
-  padding: 10px;
-  background: linear-gradient(145deg, #faf6eb, #eee4ce);
+  padding: 0;
+  overflow: hidden;
+  background: #eee4ce center / cover no-repeat;
   isolation: isolate;
 }
 .heritage-dock .dock-preview-frame::before {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  pointer-events: none;
-  border: 1px solid #bba57940;
-  border-radius: 2px;
+  display: none;
 }
 .heritage-dock .dock-preview-frame img {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
   min-height: 0;
   padding: 0;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   transform: none;
 }
@@ -880,25 +878,52 @@
 .heritage-dock .dock-artifact-grid .dock-preview-caption {
   text-wrap: balance;
   border-top: 0;
-  padding: 5px 7px;
+  padding: 5px 4px;
   font-size: 11px;
   line-height: 1.6;
   font-weight: 500;
   background: transparent;
 }
 .heritage-dock .dock-artifact-grid button {
-  grid-template-columns: 48% minmax(0, 1fr);
+  grid-template-columns: min(60%, 96px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
 }
 .heritage-dock .dock-artifact-grid .dock-preview-frame {
-  margin: 6px 0 6px 6px;
-  padding: 6px;
-  border: 1px solid #bba57940;
-  border-radius: 3px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
 }
-.heritage-dock .dock-artifact-grid .dock-preview-frame::before {
-  display: none;
+.heritage-dock .dock-land-preview-0 img {
+  object-position: 82% center;
+}
+.heritage-dock .dock-land-preview-1 img {
+  object-position: 65% center;
+}
+.heritage-dock .dock-land-preview-2 img {
+  object-position: 55% 42%;
+}
+.heritage-dock .dock-preview-artifact-2 img {
+  object-position: center 47%;
+}
+.heritage-dock .dock-preview-artifact-4 img {
+  object-position: center 55%;
+}
+.heritage-dock .dock-preview-artifact-10 img {
+  object-position: center 46%;
+}
+.heritage-dock .dock-preview-artifact-5 img {
+  object-fit: contain;
+}
+.heritage-dock .dock-preview-artifact-5::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: -8px;
+  background: inherit;
+  filter: blur(5px);
+  pointer-events: none;
 }
 .dock-land-grid small {
   font-size: 8px;
@@ -1482,10 +1507,7 @@
 }
 @media (max-width: 1190px) and (min-width: 1024px) {
   .heritage-dock .dock-land-grid .dock-preview-frame {
-    padding: 6px;
-  }
-  .heritage-dock .dock-land-grid .dock-preview-frame::before {
-    inset: 3px;
+    padding: 0;
   }
   .heritage-dock :is(.dock-land-grid, .dock-artifact-grid) button {
     grid-template-rows: minmax(0, 1fr) 48px;
@@ -1502,8 +1524,14 @@
     line-height: 1.5;
   }
   .heritage-dock .dock-artifact-grid .dock-preview-frame {
-    margin: 4px 0 4px 4px;
-    padding: 4px;
+    margin: 0;
+    padding: 0;
+  }
+  .heritage-dock .dock-preview-artifact-4 {
+    background: #fff;
+  }
+  .heritage-dock .dock-preview-artifact-4 img {
+    object-fit: contain;
   }
   .dock-land-grid strong {
     font-size: 9px;
