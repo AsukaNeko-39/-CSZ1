@@ -173,8 +173,8 @@ export default function CatalogPage({
                     alt={item.images[0].caption}
                     loading="lazy"
                   />
-                  {kind === "land" ? (
-                    <span className="culture-land-image-caption">
+                  {kind === "land" || kind === "artifacts" ? (
+                    <span className="culture-card-image-caption">
                       {item.images[0].caption}
                       <ArrowUpRight size={15} aria-hidden="true" />
                     </span>

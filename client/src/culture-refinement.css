@@ -227,7 +227,7 @@
   transform: translateY(0);
 }
 /* Documents and tools need their complete silhouette and page edges. */
-.culture-catalog--land .culture-card-image {
+:is(.culture-catalog--land, .culture-catalog--artifacts) .culture-card-image {
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
   gap: 10px;
@@ -237,22 +237,25 @@
   background-size: cover;
   background-position: center;
 }
-.culture-catalog--land .culture-card-image img {
+:is(.culture-catalog--land, .culture-catalog--artifacts)
+  .culture-card-image
+  img {
   min-height: 0;
   object-fit: contain;
   transition: none;
 }
-.culture-catalog--land .culture-card-image::after {
+:is(.culture-catalog--land, .culture-catalog--artifacts)
+  .culture-card-image::after {
   content: none;
 }
-.culture-catalog--land
+:is(.culture-catalog--land, .culture-catalog--artifacts)
   .culture-card:is(:hover, :focus-visible)
   .culture-card-image
   img {
   transform: none;
   filter: none;
 }
-.culture-land-image-caption {
+.culture-card-image-caption {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -265,21 +268,26 @@
   line-height: 1.65;
   text-align: left;
 }
-.culture-land-image-caption svg {
+.culture-card-image-caption svg {
   flex-shrink: 0;
   transition: transform 0.25s;
 }
-.culture-catalog--land
+:is(.culture-catalog--land, .culture-catalog--artifacts)
   .culture-card:is(:hover, :focus-visible)
-  .culture-land-image-caption
+  .culture-card-image-caption
   svg {
   transform: translate(2px, -2px);
 }
-.culture-detail-dialog--land .culture-detail-gallery img {
+:is(.culture-detail-dialog--land, .culture-detail-dialog--artifacts)
+  .culture-detail-gallery
+  img {
   height: auto;
   max-height: min(680px, 70vh);
 }
-.culture-detail-dialog--land .culture-detail-gallery a:hover img {
+:is(.culture-detail-dialog--land, .culture-detail-dialog--artifacts)
+  .culture-detail-gallery
+  a:hover
+  img {
   transform: none;
 }
 .culture-card-body {
