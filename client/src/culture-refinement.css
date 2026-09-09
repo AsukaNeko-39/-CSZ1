@@ -226,6 +226,62 @@
   opacity: 1;
   transform: translateY(0);
 }
+/* Documents and tools need their complete silhouette and page edges. */
+.culture-catalog--land .culture-card-image {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 10px;
+  height: clamp(300px, 26vw, 360px);
+  padding: 14px 14px 0;
+  background-image: linear-gradient(#fff9ece0, #eee1c7d9), var(--culture-field);
+  background-size: cover;
+  background-position: center;
+}
+.culture-catalog--land .culture-card-image img {
+  min-height: 0;
+  object-fit: contain;
+  transition: none;
+}
+.culture-catalog--land .culture-card-image::after {
+  content: none;
+}
+.culture-catalog--land
+  .culture-card:is(:hover, :focus-visible)
+  .culture-card-image
+  img {
+  transform: none;
+  filter: none;
+}
+.culture-land-image-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 39px;
+  padding: 9px 1px;
+  border-top: 1px solid #b69c683d;
+  color: #7b6238;
+  font-size: 12px;
+  line-height: 1.65;
+  text-align: left;
+}
+.culture-land-image-caption svg {
+  flex-shrink: 0;
+  transition: transform 0.25s;
+}
+.culture-catalog--land
+  .culture-card:is(:hover, :focus-visible)
+  .culture-land-image-caption
+  svg {
+  transform: translate(2px, -2px);
+}
+.culture-detail-dialog--land .culture-detail-gallery img {
+  height: auto;
+  max-height: min(680px, 70vh);
+}
+.culture-detail-dialog--land .culture-detail-gallery a:hover img {
+  transform: none;
+}
 .culture-card-body {
   background: linear-gradient(145deg, #fffdf481, #eddfbc42);
   padding: 21px 23px 18px;

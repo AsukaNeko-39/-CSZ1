@@ -173,9 +173,16 @@ export default function CatalogPage({
                     alt={item.images[0].caption}
                     loading="lazy"
                   />
-                  <span className="culture-image-peek">
-                    翻阅图文 <ArrowUpRight size={16} />
-                  </span>
+                  {kind === "land" ? (
+                    <span className="culture-land-image-caption">
+                      {item.images[0].caption}
+                      <ArrowUpRight size={15} aria-hidden="true" />
+                    </span>
+                  ) : (
+                    <span className="culture-image-peek">
+                      翻阅图文 <ArrowUpRight size={16} />
+                    </span>
+                  )}
                 </div>
               ) : (
                 <div className="culture-text-motif">
@@ -225,7 +232,11 @@ export default function CatalogPage({
         }}
       >
         <DialogContent
-          className="culture-detail-dialog sm:max-w-4xl"
+          className={
+            "culture-detail-dialog culture-detail-dialog--" +
+            kind +
+            " sm:max-w-4xl"
+          }
           showCloseButton={false}
         >
           {selected && (
