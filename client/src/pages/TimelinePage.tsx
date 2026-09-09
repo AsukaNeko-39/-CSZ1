@@ -19,6 +19,7 @@ import { culturePoints } from "@/data/points";
 import { assetUrl } from "@/lib/assets";
 import { SectionHeading } from "./CatalogPage";
 import BookReader from "@/components/BookReader";
+import ChartMagnifier from "@/components/ChartMagnifier";
 import {
   SectionJourney,
   sceneryStyle,
@@ -235,20 +236,16 @@ export default function TimelinePage({
             放大查看
           </button>
         </div>
-        <button
-          className="culture-chart-preview"
-          onClick={() => {
+        <ChartMagnifier
+          src={chart}
+          onOpen={() => {
             setZoom(1);
             setChartOpen(true);
           }}
-          aria-label="放大发展脉络图"
-        >
-          <img
-            src={chart}
-            alt="湖湘农耕文化发展脉络图，展示五个阶段的历史演进"
-            loading="lazy"
-          />
-        </button>
+        />
+        <p id="culture-chart-hint" className="culture-chart-hint">
+          <span>鼠标悬停，放大细览 · </span>点击图片可展开查看完整脉络
+        </p>
       </section>
       <SectionJourney current="timeline" onNavigate={onNavigate} />
       <Dialog open={chartOpen} onOpenChange={setChartOpen}>

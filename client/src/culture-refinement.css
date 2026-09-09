@@ -1047,18 +1047,71 @@
   padding: 16px 0;
   border-top: 1px solid #ab8b4355;
 }
-.culture-chart-preview {
+.culture-chart .culture-chart-preview {
+  position: relative;
+  display: block;
+  overflow: hidden;
   padding: 0;
   border-color: #ac8b424f;
   box-shadow: 0 10px 24px #78551914;
   background: #fff9eb;
+  cursor: zoom-in;
   transition:
-    transform 0.35s,
-    box-shadow 0.35s;
+    border-color 0.25s,
+    box-shadow 0.25s;
 }
-.culture-chart-preview:hover {
-  transform: translateY(-4px);
+.culture-chart .culture-chart-preview:hover {
+  border-color: #ac8b42;
   box-shadow: 0 15px 32px #78551926;
+}
+.culture-chart-preview:focus-visible {
+  outline: 2px solid #94702e;
+  outline-offset: 5px;
+}
+.culture-chart-preview img {
+  display: block;
+  border-radius: inherit;
+  user-select: none;
+}
+.culture-chart-lens {
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  border: 3px solid #b9944b;
+  border-radius: 50%;
+  background-color: #fffdf7;
+  background-repeat: no-repeat;
+  background-origin: border-box;
+  box-shadow:
+    0 8px 28px #33230d55,
+    0 0 0 4px #fff7dfb3,
+    inset 0 0 0 1px #fff2cc;
+  pointer-events: none;
+}
+.culture-chart-lens-label {
+  position: absolute;
+  bottom: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 11px;
+  border: 1px solid #d5bc7e;
+  border-radius: 20px;
+  background: #fff9eae8;
+  color: #715220;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.culture-chart-hint {
+  margin-top: 12px;
+  color: #806e4c;
+  font-size: 12px;
+  text-align: center;
+}
+@media (hover: none) {
+  .culture-chart-hint > span {
+    display: none;
+  }
 }
 
 /* Let the cover photograph meet the ink landscape, without a padded white frame. */
