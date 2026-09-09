@@ -1,6 +1,8 @@
 import { useEffect, useRef, type PointerEvent } from "react";
 import { ArrowUpRight, BookOpen } from "lucide-react";
 
+const HOVER_ZOOM = 2.8;
+
 export default function InteractiveChart({
   src,
   onOpen,
@@ -9,8 +11,8 @@ export default function InteractiveChart({
   onOpen: () => void;
 }) {
   const surface = useRef<HTMLElement>(null);
+  const viewport = useRef<HTMLButtonElement>(null);
   const picture = useRef<HTMLImageElement>(null);
-  const glow = useRef<HTMLSpanElement>(null);
   const bounds = useRef<DOMRect | null>(null);
   const pointer = useRef<{ x: number; y: number } | null>(null);
   const frame = useRef<number | null>(null);
@@ -23,17 +25,19 @@ export default function InteractiveChart({
     bounds.current = null;
     if (surface.current?.dataset.hovered === "true") {
       surface.current.dataset.hovered = "false";
+      picture.current?.style.removeProperty("transform");
     }
   }
 
   function paint() {
     frame.current = null;
     const image = picture.current;
-    const light = glow.current;
+    const button = viewport.current;
+    const figure = surface.current;
     const point = pointer.current;
-    if (!image?.naturalWidth || !light || !point) return;
-    // Cache geometry and move a small gradient layer, keeping the chart static.
-    bounds.current ??= image.getBoundingClientRect();
+    if (!image?.naturalWidth || !button || !figure || !point) return;
+    // Measure the stationary frame once; the image itself changes size as it zooms.
+    bounds.current ??= button.getBoundingClientRect();
     const area = bounds.current;
     const x = point.x - area.left;
     const y = point.y - area.top;
@@ -41,11 +45,9 @@ export default function InteractiveChart({
       leave();
       return;
     }
-    light.style.transform =
-      "translate3d(" + (x - 280) + "px," + (y - 180) + "px,0)";
-    if (surface.current?.dataset.hovered !== "true") {
-      surface.current!.dataset.hovered = "true";
-    }
+    // This translation keeps the point under the cursor in place at every edge.
+    image.style.transform = `translate3d(${x * (1 - HOVER_ZOOM)}px, ${y * (1 - HOVER_ZOOM)}px, 0) scale(${HOVER_ZOOM})`;
+    figure.dataset.hovered = "true";
   }
 
   function followPointer(event: PointerEvent<HTMLButtonElement>) {
@@ -74,7 +76,7 @@ export default function InteractiveChart({
     };
     updatePreference();
     const observer = new ResizeObserver(leave);
-    if (picture.current) observer.observe(picture.current);
+    if (viewport.current) observer.observe(viewport.current);
     preference.addEventListener("change", updatePreference);
     window.addEventListener("scroll", leave, { capture: true, passive: true });
     window.addEventListener("resize", leave);
@@ -92,6 +94,7 @@ export default function InteractiveChart({
   return (
     <figure ref={surface} className="culture-chart-interactive">
       <button
+        ref={viewport}
         type="button"
         className="culture-chart-preview"
         aria-label="放大发展脉络图"
@@ -111,10 +114,6 @@ export default function InteractiveChart({
           loading="lazy"
           draggable={false}
         />
-        <span className="culture-chart-light" aria-hidden="true">
-          <span ref={glow} className="culture-chart-glow" />
-          <span className="culture-chart-edge-wash" />
-        </span>
       </button>
       <figcaption className="culture-chart-reading">
         <span className="culture-chart-reading-icon" aria-hidden="true">
@@ -122,7 +121,12 @@ export default function InteractiveChart({
         </span>
         <span className="culture-chart-reading-copy">
           <strong>一卷长图，读懂湖湘农耕</strong>
-          <span id="culture-chart-hint">点击展开，细读图中的历史与故事</span>
+          <span id="culture-chart-hint">
+            <span className="culture-chart-hover-hint">
+              悬停渐进放大，移动查看细节 ·{" "}
+            </span>
+            点击展开长图
+          </span>
         </span>
         <button type="button" className="culture-chart-open" onClick={open}>
           展开长图 <ArrowUpRight size={17} aria-hidden="true" />
