@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { ArrowRight, Pause, Play } from "lucide-react";
-import RiceField from "@/components/RiceField";
+import { useState } from "react";
+import { ArrowRight, BookOpen } from "lucide-react";
+import { assetUrl } from "@/lib/assets";
 import { culturePoints } from "@/data/points";
 import { introCopy } from "@/data/catalog";
 import {
@@ -19,44 +19,41 @@ const categories = [
 ] as const;
 
 export default function CoverPage({ onEnter }: { onEnter: () => void }) {
-  const [reducedMotion, setReducedMotion] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-  useEffect(() => {
-    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(preference.matches);
-    update();
-    preference.addEventListener("change", update);
-    return () => preference.removeEventListener("change", update);
-  }, []);
-  const [paused, setPaused] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
-  const still = !!reducedMotion || paused || aboutOpen;
 
   return (
-    <main className="rice-cover" aria-labelledby="rice-cover-title">
-      <RiceField paused={still} />
-      <div className="rice-cover-mist" aria-hidden="true" />
+    <main className="landscape-cover" aria-labelledby="landscape-cover-title">
+      <img
+        className="landscape-cover-background"
+        src={assetUrl("/materials/welcome/huxiang-landscape-20260922.webp")}
+        width={1736}
+        height={906}
+        alt=""
+        aria-hidden="true"
+        fetchPriority="high"
+        decoding="async"
+      />
+      <div className="landscape-cover-shade" aria-hidden="true" />
 
-      <section className="rice-cover-content">
-        <p className="rice-cover-english" lang="en">
+      <section className="landscape-cover-content">
+        <p className="landscape-cover-english" lang="en">
           HUNAN AGRICULTURAL HERITAGE DIGITAL MAP
         </p>
-        <h1 id="rice-cover-title" className="rice-cover-title">
+        <h1 id="landscape-cover-title" className="landscape-cover-title">
           农耕文化
           <span>数字地图</span>
         </h1>
-        <div className="rice-cover-invitation">
-          <p className="rice-cover-tagline">
+        <div className="landscape-cover-invitation">
+          <p className="landscape-cover-tagline">
             万年稻作<span>·</span>耕读传家<span>·</span>三湘四水
           </p>
-          <p className="rice-cover-caption">循着稻香，探寻湖湘大地的农耕记忆</p>
+          <p className="landscape-cover-caption">循着稻香，探寻湖湘大地的农耕记忆</p>
         </div>
-        <button className="rice-cover-enter" onClick={onEnter}>
+        <button className="landscape-cover-enter" onClick={onEnter}>
           <span>探索地图</span>
           <ArrowRight size={17} strokeWidth={1.5} aria-hidden="true" />
         </button>
-        <ul className="rice-cover-legend" aria-label="地图收录的文化点位">
+        <ul className="landscape-cover-legend" aria-label="地图收录的文化点位">
           {categories.map(category => (
             <li key={category.key}>
               <i
@@ -64,7 +61,7 @@ export default function CoverPage({ onEnter }: { onEnter: () => void }) {
                 aria-hidden="true"
               />
               <span>{category.label}</span>
-              <span className="rice-cover-count">
+              <span className="landscape-cover-count">
                 {
                   culturePoints.filter(point => point.category === category.key)
                     .length
@@ -75,50 +72,31 @@ export default function CoverPage({ onEnter }: { onEnter: () => void }) {
         </ul>
       </section>
 
-      <footer className="rice-cover-footer">
+      <footer className="landscape-cover-footer">
         <button
-          className="rice-cover-about"
+          className="landscape-cover-about"
           onClick={() => setAboutOpen(true)}
           aria-haspopup="dialog"
         >
-          关于地图 <span aria-hidden="true">↗</span>
+          <BookOpen size={18} strokeWidth={1.5} aria-hidden="true" />
+          <span className="sr-only">关于地图</span>
         </button>
-        <p className="rice-cover-credits">
+        <p className="landscape-cover-credits">
           <span>主办单位：湖南省自然资源厅</span>
           <span>承办单位：湖南省第三测绘院</span>
         </p>
-        <button
-          className="rice-cover-motion"
-          onClick={() => setPaused(value => !value)}
-          aria-label={
-            reducedMotion
-              ? "已遵循系统设置，关闭稻田动画"
-              : paused
-                ? "播放稻田动画"
-                : "暂停稻田动画"
-          }
-          aria-pressed={still}
-          disabled={!!reducedMotion}
-        >
-          <span>{still ? "静听稻香" : "风起稻浪"}</span>
-          {still ? (
-            <Play size={12} aria-hidden="true" />
-          ) : (
-            <Pause size={12} aria-hidden="true" />
-          )}
-        </button>
       </footer>
 
       <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
-        <DialogContent className="rice-cover-dialog">
+        <DialogContent className="landscape-cover-dialog">
           <DialogHeader>
-            <p className="rice-cover-dialog-kicker">三湘四水 · 万年稻作</p>
+            <p className="landscape-cover-dialog-kicker">三湘四水 · 万年稻作</p>
             <DialogTitle>湖湘农耕文化</DialogTitle>
             <DialogDescription>
               一幅地图，展开湖湘万年农耕文明。
             </DialogDescription>
           </DialogHeader>
-          <div className="rice-cover-story">
+          <div className="landscape-cover-story">
             {introCopy.cover.map(text => (
               <p key={text}>{text}</p>
             ))}

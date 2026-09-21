@@ -1,7 +1,9 @@
 {
   "version": "csz2",
   "name": "CSZ2版",
-  "date": "2026-09-21",
+  "date": "2026-09-22",
   "sourceRepository": "AsukaNeko-39/-CSZ1",
-  "sourceRef": "csz2"
+  "sourceRef": "main",
+  "baselineTag": "csz2",
+  "revision": "landscape-cover-20260922"
 }

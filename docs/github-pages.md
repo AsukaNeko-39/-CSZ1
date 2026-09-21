@@ -44,3 +44,8 @@ node node_modules/vite/bin/vite.js build --base '/-CSZ1-pages/' --outDir '<独�
 ```
 
 公开仓库上传构建输出、网页素材及用户要求公开的修改记录 PDF；不上传源码开发历史、本地需求文档、凭据、依赖目录或 `.openai` 绑定。更新网页时保留 `docs/modification-record.pdf`、`.nojekyll`、`404.html` 和禁索引设置。更新前核对欢迎页、五个专题、图片路径与手机布局，更新后再次核对公开网址。
+
+
+## 2026-09-22 欢迎页图片更新
+
+以用户新截图高清修复水墨农耕背景，替换米白稻田欢迎页；版本仍为CSZ2。说明与当前截图见 [本次补记](releases/csz2-cover-20260922.md)。原36页PDF保持历史原样；本次只新增图文补记。公开入口缓存参数为 `v=csz2-landscape-20260922`；原网址继续有效。
