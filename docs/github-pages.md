@@ -1,6 +1,12 @@
 # GitHub 网页发布
 
-网站版本：CSZ1版。
+网站版本：**CSZ2版**，Git 标签 `csz2`。
+
+## 2026-09-21 CSZ2版本
+
+本轮修改见 [CSZ2修改记录](releases/csz2.md)，带截图补记为 [6页PDF](releases/csz2-notes.pdf)。公开完整记录在保留原30页的基础上加入本轮6页，共36页。仓库名与公开网址继续沿用。
+
+下列2026-09-09记录为历史归档，其中CSZ1版本及旧页数不代表当前发布。
 
 欢迎页入口：https://asukaneko-39.github.io/-CSZ1-pages/#cover
 

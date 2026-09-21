@@ -1,19 +1,30 @@
-import { useEffect, useState } from 'react';
-import { ChevronDown, ChevronLeft, Search, SlidersHorizontal, Trash2 } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { isCompactViewport, useCompactLayout } from '@/hooks/useCompactLayout';
+import { useEffect, useState } from "react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  Search,
+  SlidersHorizontal,
+  Trash2,
+} from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { isCompactViewport, useCompactLayout } from "@/hooks/useCompactLayout";
 
 interface LayerPanelProps {
   visibleLayers: { ancient: boolean; modern: boolean; red: boolean };
-  onLayerToggle: (layer: 'ancient' | 'modern' | 'red') => void;
+  onLayerToggle: (layer: "ancient" | "modern" | "red") => void;
   onSearch: (query: string) => void;
   onClear: () => void;
 }
 
-export default function LayerPanel({ visibleLayers, onLayerToggle, onSearch, onClear }: LayerPanelProps) {
+export default function LayerPanel({
+  visibleLayers,
+  onLayerToggle,
+  onSearch,
+  onClear,
+}: LayerPanelProps) {
   const isCompactLayout = useCompactLayout();
   const [collapsed, setCollapsed] = useState(isCompactViewport);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (isCompactLayout) setCollapsed(true);
@@ -42,10 +53,26 @@ export default function LayerPanel({ visibleLayers, onLayerToggle, onSearch, onC
       {/* Panel header */}
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-gold/10">
         <div className="flex items-center gap-2">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-gold-dark">
-            <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill="none"
+            className="text-gold-dark"
+          >
+            <path
+              d="M2 4h12M2 8h12M2 12h12"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinecap="round"
+            />
           </svg>
-          <h3 className="text-[13px] font-semibold font-serif tracking-wide" style={{ color: '#3d2e0a' }}>图层筛选</h3>
+          <h3
+            className="text-[15px] font-semibold font-serif tracking-wide"
+            style={{ color: "#3d2e0a" }}
+          >
+            图层筛选
+          </h3>
         </div>
         <button
           onClick={() => setCollapsed(true)}
@@ -59,39 +86,47 @@ export default function LayerPanel({ visibleLayers, onLayerToggle, onSearch, onC
 
       {/* Layer controls */}
       <div className="px-4 py-2.5 lg:py-3 space-y-1">
-        <p className="text-xs font-medium text-muted-foreground mb-2">图层控制</p>
+        <p className="text-[14px] font-medium text-muted-foreground mb-2">
+          图层控制
+        </p>
         <LayerToggle
           color="#8B6914"
           label="重要遗址"
           checked={visibleLayers.ancient}
-          onChange={() => onLayerToggle('ancient')}
+          onChange={() => onLayerToggle("ancient")}
         />
         <LayerToggle
           color="#4A7C59"
           label="重大工程"
           checked={visibleLayers.modern}
-          onChange={() => onLayerToggle('modern')}
+          onChange={() => onLayerToggle("modern")}
         />
         <LayerToggle
           color="#C41E3A"
           label="重要场馆"
           checked={visibleLayers.red}
-          onChange={() => onLayerToggle('red')}
+          onChange={() => onLayerToggle("red")}
         />
       </div>
 
       {/* Search */}
       <div className="px-4 py-2.5 lg:py-3 border-t border-gold/10">
-        <p className="text-xs font-medium text-muted-foreground mb-2">点位搜索</p>
+        <p className="text-[14px] font-medium text-muted-foreground mb-2">
+          点位搜索
+        </p>
         <form onSubmit={handleSearch} className="relative">
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             placeholder="搜索点位名称..."
-            className="w-full h-10 lg:h-8 pl-3 pr-10 lg:pr-8 text-xs bg-white/60 border border-gold/15 rounded-md focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/15 placeholder:text-muted-foreground/50"
+            className="w-full h-10 lg:h-8 pl-3 pr-10 lg:pr-8 text-[14px] bg-white/60 border border-gold/15 rounded-md focus:outline-none focus:border-gold/40 focus:ring-1 focus:ring-gold/15 placeholder:text-muted-foreground"
           />
-          <button type="submit" aria-label="搜索点位" className="absolute right-0 top-0 h-full w-10 lg:w-8 flex items-center justify-center">
+          <button
+            type="submit"
+            aria-label="搜索点位"
+            className="absolute right-0 top-0 h-full w-10 lg:w-8 flex items-center justify-center"
+          >
             <Search size={13} className="text-muted-foreground" />
           </button>
         </form>
@@ -99,19 +134,36 @@ export default function LayerPanel({ visibleLayers, onLayerToggle, onSearch, onC
 
       {/* Legend */}
       <div className="hidden lg:block px-4 py-3 border-t border-gold/10">
-        <p className="text-xs font-medium text-muted-foreground mb-2">图例说明</p>
+        <p className="text-[14px] font-medium text-muted-foreground mb-2">
+          图例说明
+        </p>
         <div className="space-y-1.5">
-          <LegendItem color="#8B6914" label="重要遗址" period="遗址与传统聚落" />
-          <LegendItem color="#4A7C59" label="重大工程" period="农业建设与实践" />
-          <LegendItem color="#C41E3A" label="重要场馆" period="博物馆与展示场所" />
+          <LegendItem
+            color="#8B6914"
+            label="重要遗址"
+            period="遗址与传统聚落"
+          />
+          <LegendItem
+            color="#4A7C59"
+            label="重大工程"
+            period="农业建设与实践"
+          />
+          <LegendItem
+            color="#C41E3A"
+            label="重要场馆"
+            period="博物馆与展示场所"
+          />
         </div>
       </div>
 
       {/* Clear button */}
       <div className="px-4 py-2.5 lg:py-3 border-t border-gold/10">
         <button
-          onClick={() => { onClear(); setSearchQuery(''); }}
-          className="w-full flex items-center justify-center gap-1.5 h-10 lg:h-8 text-xs text-muted-foreground border border-gold/15 rounded-md hover:bg-gold/5 hover:text-gold-dark transition-colors"
+          onClick={() => {
+            onClear();
+            setSearchQuery("");
+          }}
+          className="w-full flex items-center justify-center gap-1.5 h-10 lg:h-8 text-[14px] text-muted-foreground border border-gold/15 rounded-md hover:bg-gold/5 hover:text-gold-dark transition-colors"
         >
           <Trash2 size={12} />
           清空筛选
@@ -121,24 +173,50 @@ export default function LayerPanel({ visibleLayers, onLayerToggle, onSearch, onC
   );
 }
 
-function LayerToggle({ color, label, checked, onChange }: { color: string; label: string; checked: boolean; onChange: () => void }) {
+function LayerToggle({
+  color,
+  label,
+  checked,
+  onChange,
+}: {
+  color: string;
+  label: string;
+  checked: boolean;
+  onChange: () => void;
+}) {
   return (
     <div className="flex min-h-11 lg:min-h-0 items-center justify-between py-2 lg:py-1.5">
       <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full border-2 border-white shadow-sm" style={{ background: color }} />
-        <span className="text-xs text-foreground">{label}</span>
+        <div
+          className="w-3 h-3 rounded-full border-2 border-white shadow-sm"
+          style={{ background: color }}
+        />
+        <span className="text-[14px] text-foreground">{label}</span>
       </div>
-      <Switch aria-label={label} checked={checked} onCheckedChange={onChange} className="lg:scale-75" />
+      <Switch
+        aria-label={label}
+        checked={checked}
+        onCheckedChange={onChange}
+        className="lg:scale-75"
+      />
     </div>
   );
 }
 
-function LegendItem({ color, label, period }: { color: string; label: string; period: string }) {
+function LegendItem({
+  color,
+  label,
+  period,
+}: {
+  color: string;
+  label: string;
+  period: string;
+}) {
   return (
     <div className="flex items-center gap-2">
       <div className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
-      <span className="text-xs text-foreground/80">{label}</span>
-      <span className="text-xs text-muted-foreground">（{period}）</span>
+      <span className="text-[14px] text-foreground">{label}</span>
+      <span className="text-[14px] text-muted-foreground">（{period}）</span>
     </div>
   );
 }

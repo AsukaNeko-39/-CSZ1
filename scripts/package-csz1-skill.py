@@ -60,7 +60,7 @@ def package(project: Path, output: Path):
 
     manifest = {
         "skill": "csz1-agri-map",
-        "website_version": "CSZ1版",
+        "website_version": "CSZ2版",
         "files": {name: hashlib.sha256(data).hexdigest() for name, data in payload.items()},
     }
     payload["manifest.json"] = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")

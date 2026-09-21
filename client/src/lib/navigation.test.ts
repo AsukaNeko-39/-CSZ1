@@ -58,6 +58,18 @@ describe("welcome entry", () => {
     });
     expect(readNavigation("#%bad").section).toBe("cover");
   });
+  it("returns retired solar-term links to the welcome page", () => {
+    for (const hash of ["#solar", "#solar/s1"]) {
+      expect(readNavigation(hash)).toMatchObject({
+        section: "cover",
+        target: undefined,
+      });
+      expect(
+        getInitialNavigation(hash, "reload", navigationHistoryState(null))
+          .section
+      ).toBe("cover");
+    }
+  });
   it("shares the welcome page without old preview or version parameters", () => {
     expect(
       getWelcomeUrl(

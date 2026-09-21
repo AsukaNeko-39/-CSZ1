@@ -95,13 +95,7 @@ export function SectionJourney({
         {chapters
           .filter(chapter => chapter.id !== current)
           .map(chapter => (
-            <button
-              key={chapter.id}
-              onClick={() => onNavigate(chapter.id)}
-              style={{
-                backgroundImage: `url("${assetUrl("/manus-storage/" + chapter.image)}")`,
-              }}
-            >
+            <button key={chapter.id} onClick={() => onNavigate(chapter.id)}>
               <span>
                 <strong>{chapter.name}</strong>
                 <small>{chapter.note}</small>

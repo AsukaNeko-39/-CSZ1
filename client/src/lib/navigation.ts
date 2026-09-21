@@ -6,7 +6,6 @@ export const navigationOrder = [
   "folk",
   "artifacts",
   "routes",
-  "solar",
 ];
 
 export function readNavigation(hash: string) {

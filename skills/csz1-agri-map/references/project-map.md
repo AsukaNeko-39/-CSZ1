@@ -1,5 +1,9 @@
 # 项目与资料地图
 
+2026-09-21 版本升级：当前为 **CSZ2版**，私有源码用 `csz2` 标签归档，原两个仓库名与公开欢迎页链接继续沿用。以下旧提交号仅用于历史定位。
+
+2026-09-21 补充：欢迎页已在本地按新参考重做，使用 `client/src/components/RiceField.tsx` 和 `client/src/pages/cover.css`；已更新 `CoverPage.tsx` 及欢迎页基线截图。下列 2026-09-09 提交号是历史定位，当前设计以项目 `design.md` 最新章节为准。
+
 这是一份 CSZ1版在 2026-09-09 的定位快照。开始工作时读取当前文件和 Git 状态，不假设快照后没有其他改动。
 
 ## 定位与版本
@@ -24,23 +28,24 @@
 
 | 文件 | 作用 |
 | --- | --- |
-| `client/src/pages/CoverPage.tsx` | 欢迎页、介绍与进入按钮 |
+| `client/src/pages/CoverPage.tsx` | 居中欢迎页、关于地图与探索入口 |
+| `client/src/components/RiceField.tsx`、`client/src/pages/cover.css` | 风动稻田、欢迎页专用排版及响应式 |
 | `client/src/pages/Home.tsx` | 五专题组装、点位选择、站内导航与滚动恢复 |
 | `client/src/lib/navigation.ts` | 外部首次访问、历史恢复、欢迎页分享链接 |
 | `client/src/components/Header.tsx` | 顶部/移动导航、搜索、分享与复制受限窗口 |
-| `client/src/components/BottomModules.tsx` | 首页底部五栏、缩略图和入口 |
+| `client/src/components/BottomModules.tsx` | 首页底部四个专题、民俗预览、缩略图和入口 |
 | `client/src/pages/TimelinePage.tsx` | 五个发展阶段、年代图与高清弹窗 |
 | `client/src/components/BookReader.tsx` | 按容器和字体分页的长正文 |
 | `client/src/components/InteractiveChart.tsx` | 2.8 倍渐进放大与鼠标移动合帧 |
 | `client/src/pages/CatalogPage.tsx` | 土地制度与民俗的资料列表/详情 |
 | `client/src/pages/ArtifactsPage.tsx` | 重要文物列表与详情 |
-| `client/src/pages/SolarTermsPage.tsx`、`RoutesPage.tsx` | 节气、主题线路 |
+| `client/src/pages/SolarTermsPage.tsx`、`RoutesPage.tsx` | 旧节气实现（不再接入导航）、主题线路 |
 | `client/src/components/CultureScenery.tsx` | 五专题定义、背景变量、前后专题和页尾入口 |
 | `client/src/components/CulturePageTransition.tsx` | 进出场和快速导航时旧画面的清理 |
 | `client/src/components/HunanMap.tsx` | 当前地图实现，直接使用 Leaflet |
 | `client/src/components/PointDetail.tsx` | 地图点位面板；部分动作仍是占位提示 |
 | `client/src/lib/assets.ts` | 资源根路径适配，包含 Pages 子路径 |
-| `client/src/index.css` → `culture.css` → `culture-refinement.css` | 主题、基础文化样式、后续细化；查看实际导入顺序和覆盖关系 |
+| `client/src/index.css` → `culture.css` → `culture-refinement.css` → `culture-readability.css` | 主题、基础文化样式、后续细化；查看实际导入顺序和覆盖关系 |
 
 `Map.tsx` 是另一份已有组件，不要仅凭文件名认定它是当前地图。旧设计文档提到的 `react-leaflet` 也不是当前包配置；以代码实际导入为准。
 

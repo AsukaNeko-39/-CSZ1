@@ -110,22 +110,6 @@ export default function CatalogPage({
         onNavigate={onNavigate}
       />
       <div className="culture-catalog-inner">
-        {kind === "folk" && onNavigate && (
-          <button
-            className="culture-solar-banner"
-            onClick={() => onNavigate("solar")}
-          >
-            <img
-              src={assetUrl("/manus-storage/solar-terms/st-guyu.webp")}
-              alt=""
-            />
-            <span>
-              <strong>二十四节气与湖湘农事</strong>
-              <small>循四时物候，读春生、夏长、秋收、冬藏</small>
-            </span>
-            <ArrowUpRight size={22} />
-          </button>
-        )}
         <div className="culture-filter-bar">
           <div className="culture-categories" aria-label={`${title}分类`}>
             {categories.map(name => (

@@ -1189,6 +1189,8 @@
   transform-origin: left center;
 }
 .reader-measure {
+  /* Match the visible leaf exactly, including fractional responsive widths. */
+  width: 100%;
   position: absolute;
   top: 0;
   left: 0;

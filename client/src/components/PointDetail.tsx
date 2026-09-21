@@ -1,8 +1,17 @@
-import { X, ChevronLeft, ChevronRight, FileText, Route, Share2, MapPin, CalendarDays } from 'lucide-react';
-import { CulturePoint } from '@/data/points';
-import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from 'sonner';
-import { assetUrl } from '@/lib/assets';
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Route,
+  Share2,
+  MapPin,
+  CalendarDays,
+} from "lucide-react";
+import { CulturePoint } from "@/data/points";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { assetUrl } from "@/lib/assets";
 
 interface PointDetailProps {
   point: CulturePoint | null;
@@ -12,18 +21,23 @@ interface PointDetailProps {
 }
 
 const categoryLabels: Record<string, string> = {
-  ancient: '重要遗址',
-  modern: '重大工程',
-  red: '重要场馆',
+  ancient: "重要遗址",
+  modern: "重大工程",
+  red: "重要场馆",
 };
 
 const categoryBgColors: Record<string, string> = {
-  ancient: '#8B6914',
-  modern: '#4A7C59',
-  red: '#C41E3A',
+  ancient: "#8B6914",
+  modern: "#4A7C59",
+  red: "#C41E3A",
 };
 
-export default function PointDetail({ point, onClose, onPrev, onNext }: PointDetailProps) {
+export default function PointDetail({
+  point,
+  onClose,
+  onPrev,
+  onNext,
+}: PointDetailProps) {
   return (
     <AnimatePresence mode="wait">
       {point && (
@@ -36,27 +50,56 @@ export default function PointDetail({ point, onClose, onPrev, onNext }: PointDet
           role="dialog"
           aria-label={`${point.name}点位详情`}
           className="absolute inset-x-2 bottom-2 z-[1001] w-auto point-detail-panel rounded-xl overflow-hidden max-h-[68%] flex flex-col lg:inset-x-auto lg:bottom-auto lg:top-3 lg:right-3 lg:w-[min(384px,calc(100vw-1.5rem))] lg:max-h-[calc(100%-1.5rem)] lg:rounded-lg"
-          style={{
-            '--xiangxi-pattern': `url("${assetUrl('/manus-storage/xiangxi-brocade-pattern.png')}")`,
-          } as React.CSSProperties}
+          style={
+            {
+              "--xiangxi-pattern": `url("${assetUrl("/manus-storage/xiangxi-brocade-pattern.png")}")`,
+            } as React.CSSProperties
+          }
         >
           {/* Header */}
           <div className="flex items-center justify-between px-3 lg:px-4 py-2 border-b border-gold/10 bg-white/95 backdrop-blur-sm flex-shrink-0">
             <div className="flex items-center gap-2">
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" className="text-gold-dark">
-                <circle cx="8" cy="8" r="3" fill="currentColor" opacity="0.3"/>
-                <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 16 16"
+                fill="none"
+                className="text-gold-dark"
+              >
+                <circle cx="8" cy="8" r="3" fill="currentColor" opacity="0.3" />
+                <circle
+                  cx="8"
+                  cy="8"
+                  r="6"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
               </svg>
-              <h3 className="text-[13px] font-semibold text-foreground font-serif">点位详情</h3>
+              <h3 className="text-[15px] font-semibold text-foreground font-serif">
+                点位详情
+              </h3>
             </div>
             <div className="flex items-center gap-0.5">
-              <button aria-label="上一个点位" onClick={onPrev} className="w-9 h-9 lg:w-7 lg:h-7 flex items-center justify-center rounded-md hover:bg-gold/10 transition-colors active:scale-95">
+              <button
+                aria-label="上一个点位"
+                onClick={onPrev}
+                className="w-9 h-9 lg:w-7 lg:h-7 flex items-center justify-center rounded-md hover:bg-gold/10 transition-colors active:scale-95"
+              >
                 <ChevronLeft size={15} className="text-muted-foreground" />
               </button>
-              <button aria-label="下一个点位" onClick={onNext} className="w-9 h-9 lg:w-7 lg:h-7 flex items-center justify-center rounded-md hover:bg-gold/10 transition-colors active:scale-95">
+              <button
+                aria-label="下一个点位"
+                onClick={onNext}
+                className="w-9 h-9 lg:w-7 lg:h-7 flex items-center justify-center rounded-md hover:bg-gold/10 transition-colors active:scale-95"
+              >
                 <ChevronRight size={15} className="text-muted-foreground" />
               </button>
-              <button aria-label="关闭点位详情" onClick={onClose} className="w-9 h-9 lg:w-7 lg:h-7 flex items-center justify-center rounded-md hover:bg-red/10 transition-colors ml-1 active:scale-95">
+              <button
+                aria-label="关闭点位详情"
+                onClick={onClose}
+                className="w-9 h-9 lg:w-7 lg:h-7 flex items-center justify-center rounded-md hover:bg-red/10 transition-colors ml-1 active:scale-95"
+              >
                 <X size={15} className="text-muted-foreground" />
               </button>
             </div>
@@ -66,19 +109,23 @@ export default function PointDetail({ point, onClose, onPrev, onNext }: PointDet
           <div className="p-3 lg:p-4 space-y-2.5 lg:space-y-3 overflow-y-auto min-h-0">
             {/* Title and category */}
             <div>
-              <h4 className="text-[15px] font-bold text-foreground font-serif leading-tight">{point.name}</h4>
+              <h4 className="text-[17px] font-bold text-foreground font-serif leading-tight">
+                {point.name}
+              </h4>
               <span
-                className="inline-block mt-1.5 px-2.5 py-0.5 text-[11px] rounded text-white font-medium"
+                className="inline-block mt-1.5 px-2.5 py-0.5 text-[13px] rounded text-white font-medium"
                 style={{ background: categoryBgColors[point.category] }}
               >
                 {categoryLabels[point.category]}
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-[11px]">
+            <div className="grid grid-cols-2 gap-2 text-[13px]">
               <div className="point-meta-chip">
                 <MapPin size={12} className="text-gold-dark" />
-                <span>{point.city} · {point.district}</span>
+                <span>
+                  {point.city} · {point.district}
+                </span>
               </div>
               <div className="point-meta-chip">
                 <CalendarDays size={12} className="text-gold-dark" />
@@ -96,14 +143,16 @@ export default function PointDetail({ point, onClose, onPrev, onNext }: PointDet
             </div>
 
             {/* Summary */}
-            <p className="text-xs leading-[1.75] text-foreground/80 line-clamp-3 lg:line-clamp-none">{point.summary}</p>
+            <p className="text-[15px] leading-[1.75] text-foreground line-clamp-3 lg:line-clamp-none">
+              {point.summary}
+            </p>
 
             {/* Tags */}
             <div className="hidden sm:flex flex-wrap gap-1.5">
-              {point.tags.map((tag) => (
+              {point.tags.map(tag => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 text-[11px] bg-parchment border border-gold/15 rounded text-earth hover:border-gold/30 hover:bg-gold/5 transition-colors cursor-default"
+                  className="px-2 py-0.5 text-[13px] bg-parchment border border-gold/15 rounded text-earth hover:border-gold/30 hover:bg-gold/5 transition-colors cursor-default"
                 >
                   {tag}
                 </span>
@@ -112,33 +161,66 @@ export default function PointDetail({ point, onClose, onPrev, onNext }: PointDet
           </div>
 
           {/* Action buttons - circular gold icon style matching reference */}
-          <div className="flex items-center justify-center gap-8 lg:gap-6 py-2.5 lg:py-3.5 border-t border-gold/10 flex-shrink-0" style={{ background: 'linear-gradient(to bottom, rgba(255,253,248,0.88), rgba(139,105,20,0.05))' }}>
+          <div
+            className="flex items-center justify-center gap-8 lg:gap-6 py-2.5 lg:py-3.5 border-t border-gold/10 flex-shrink-0"
+            style={{
+              background:
+                "linear-gradient(to bottom, rgba(255,253,248,0.88), rgba(139,105,20,0.05))",
+            }}
+          >
             <button
-              onClick={() => toast('查看详情', { description: '功能即将上线' })}
+              onClick={() => toast("查看详情", { description: "功能即将上线" })}
               className="flex flex-col items-center gap-1.5 group point-action-button"
             >
-              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-active:scale-95" style={{ background: 'linear-gradient(135deg, #a8872e 0%, #8B6914 100%)', boxShadow: '0 2px 8px rgba(139,105,20,0.3)' }}>
+              <div
+                className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-active:scale-95"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #a8872e 0%, #8B6914 100%)",
+                  boxShadow: "0 2px 8px rgba(139,105,20,0.3)",
+                }}
+              >
                 <FileText size={18} className="text-white" />
               </div>
-              <span className="text-[11px] text-earth font-medium">查看详情</span>
+              <span className="text-[13px] text-earth font-medium">
+                查看详情
+              </span>
             </button>
             <button
-              onClick={() => toast('路线规划', { description: '功能即将上线' })}
+              onClick={() => toast("路线规划", { description: "功能即将上线" })}
               className="flex flex-col items-center gap-1.5 group point-action-button"
             >
-              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-active:scale-95" style={{ background: 'linear-gradient(135deg, #a8872e 0%, #8B6914 100%)', boxShadow: '0 2px 8px rgba(139,105,20,0.3)' }}>
+              <div
+                className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-active:scale-95"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #a8872e 0%, #8B6914 100%)",
+                  boxShadow: "0 2px 8px rgba(139,105,20,0.3)",
+                }}
+              >
                 <Route size={18} className="text-white" />
               </div>
-              <span className="text-[11px] text-earth font-medium">路线规划</span>
+              <span className="text-[13px] text-earth font-medium">
+                路线规划
+              </span>
             </button>
             <button
-              onClick={() => toast('一键分享', { description: '功能即将上线' })}
+              onClick={() => toast("一键分享", { description: "功能即将上线" })}
               className="flex flex-col items-center gap-1.5 group point-action-button"
             >
-              <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-active:scale-95" style={{ background: 'linear-gradient(135deg, #a8872e 0%, #8B6914 100%)', boxShadow: '0 2px 8px rgba(139,105,20,0.3)' }}>
+              <div
+                className="w-10 h-10 lg:w-11 lg:h-11 rounded-full flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-active:scale-95"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #a8872e 0%, #8B6914 100%)",
+                  boxShadow: "0 2px 8px rgba(139,105,20,0.3)",
+                }}
+              >
                 <Share2 size={18} className="text-white" />
               </div>
-              <span className="text-[11px] text-earth font-medium">一键分享</span>
+              <span className="text-[13px] text-earth font-medium">
+                一键分享
+              </span>
             </button>
           </div>
         </motion.div>

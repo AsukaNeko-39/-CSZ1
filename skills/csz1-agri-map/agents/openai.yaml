@@ -1,4 +1,4 @@
 interface:
-  display_name: "CSZ1 湖湘农耕文化地图"
-  short_description: "维护 CSZ1版网站的五个专题、视觉交互、资料核对与 GitHub 发布"
+  display_name: "CSZ2 湖湘农耕文化地图"
+  short_description: "维护 CSZ2版网站的五个专题、视觉交互、资料核对与 GitHub 发布"
   default_prompt: "使用 $csz1-agri-map 按现行设计规范维护湖湘农耕文化地图，先核对当前项目和需求，再完成本次修改与必要验证。"

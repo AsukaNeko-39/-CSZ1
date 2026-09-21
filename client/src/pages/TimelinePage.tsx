@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Expand,
-  X,
-  ArrowUpRight,
-  MapPin,
-} from "lucide-react";
+import { Expand, X, ArrowUpRight, MapPin } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -117,28 +110,6 @@ export default function TimelinePage({
           </button>
         ))}
       </nav>
-      <div className="culture-timeline-toolbar">
-        <span>
-          第 {String(active + 1).padStart(2, "0")} 章 · {timeline[active].era}
-          <small>滑动切换时代 · 翻页细读历史</small>
-        </span>
-        <div>
-          <button
-            onClick={() => move(active - 1)}
-            disabled={active === 0}
-            aria-label="上一个阶段"
-          >
-            <ChevronLeft size={19} />
-          </button>
-          <button
-            onClick={() => move(active + 1)}
-            disabled={active === timeline.length - 1}
-            aria-label="下一个阶段"
-          >
-            <ChevronRight size={19} />
-          </button>
-        </div>
-      </div>
       <div
         ref={cards}
         className="culture-timeline-cards"

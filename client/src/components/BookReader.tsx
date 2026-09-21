@@ -19,12 +19,13 @@ export default function BookReader({
 
   useLayoutEffect(() => {
     let alive = true;
+    let frame = 0;
     function paginate() {
       const box = viewport.current,
         ruler = measure.current;
       if (!alive || !box || !ruler || !box.clientWidth || !box.clientHeight)
         return;
-      ruler.style.width = `${box.clientWidth}px`;
+      const availableHeight = box.clientHeight - 2;
       const result: string[] = [];
       let remainder = text;
       while (remainder.length) {
@@ -34,7 +35,7 @@ export default function BookReader({
         while (low <= high) {
           const middle = Math.floor((low + high) / 2);
           ruler.textContent = remainder.slice(0, middle);
-          if (ruler.offsetHeight <= box.clientHeight - 2) {
+          if (ruler.offsetHeight <= availableHeight) {
             fit = middle;
             low = middle + 1;
           } else high = middle - 1;
@@ -56,13 +57,22 @@ export default function BookReader({
       );
       setPage(previous => Math.min(previous, Math.max(0, result.length - 1)));
     }
-    const observer = new ResizeObserver(paginate);
+    function schedulePagination() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(paginate);
+    }
+    const observer = new ResizeObserver(schedulePagination);
     if (viewport.current) observer.observe(viewport.current);
-    void document.fonts.ready.then(paginate);
+    // Chinese web fonts load in subsets; later leaves can request more glyphs.
+    // Reflow when those fonts finish, even if the reader box itself has not resized.
+    document.fonts.addEventListener("loadingdone", schedulePagination);
+    void document.fonts.ready.then(schedulePagination);
     paginate();
     return () => {
       alive = false;
       observer.disconnect();
+      document.fonts.removeEventListener("loadingdone", schedulePagination);
+      cancelAnimationFrame(frame);
     };
   }, [text]);
 

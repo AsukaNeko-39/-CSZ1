@@ -1,12 +1,10 @@
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { timeline, landItems, folkItems, artifactItems } from "@/data/catalog";
-import { themeRoutes } from "@/data/points";
 import { assetUrl } from "@/lib/assets";
 import { sceneryStyle, type NavigateCulture } from "./CultureScenery";
 
 interface Props {
   onNavigate: NavigateCulture;
-  onRouteSelect: (id: string) => void;
 }
 const icons = [
   "timeline-icon-1-prehistoric.webp",
@@ -16,14 +14,6 @@ const icons = [
   "timeline-icon-6-hybrid-rice.webp",
 ];
 const eras = ["稻作起源", "两汉隋唐", "两宋清初", "晚清民国", "新中国至今"];
-const terms = [
-  ["立春", "lichun", "s1"],
-  ["雨水", "yushui", "s2"],
-  ["惊蛰", "jingzhe", "s3"],
-  ["春分", "chunfen", "s4"],
-  ["清明", "qingming", "s5"],
-  ["谷雨", "guyu", "s6"],
-];
 
 function DockHeading({
   title,
@@ -48,39 +38,13 @@ function DockHeading({
   );
 }
 
-export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
+export default function BottomModules({ onNavigate }: Props) {
   return (
     <section
       className="heritage-dock"
       style={sceneryStyle()}
       aria-label="文化专题入口"
     >
-      <div className="dock-section dock-routes">
-        <DockHeading
-          title="地图浏览"
-          more="主题线路"
-          onClick={() => onNavigate("routes")}
-        />
-        <div className="dock-route-grid">
-          {themeRoutes.slice(0, 3).map(route => (
-            <button
-              className="dock-picture"
-              key={route.id}
-              onClick={() => onRouteSelect(route.id)}
-              aria-label={`在地图中探索${route.name}`}
-            >
-              <div>
-                <img src={route.coverImage} alt="" loading="lazy" />
-                <span>
-                  <ArrowUpRight size={17} />
-                </span>
-              </div>
-              <strong>{route.name}</strong>
-              <small>{route.summary}</small>
-            </button>
-          ))}
-        </div>
-      </div>
       <div className="dock-section dock-timeline">
         <DockHeading
           title="发展脉络"
@@ -139,32 +103,25 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
           more="全部"
           onClick={() => onNavigate("folk")}
         />
-        <div className="dock-term-grid">
-          {terms.map(([name, image, id]) => (
-            <button
-              key={id}
-              onClick={() => onNavigate("solar", id)}
-              aria-label={`查看${name}节气详情`}
-            >
-              <img
-                src={assetUrl(
-                  "/manus-storage/solar-terms/st-" + image + ".webp"
-                )}
-                alt=""
-              />
-              <span>{name}</span>
-            </button>
-          ))}
-        </div>
-        <div className="dock-folk-links">
-          <button onClick={() => onNavigate("folk", folkItems[0].id)}>
-            耕作时序
-            <ChevronRight size={12} />
-          </button>
-          <button onClick={() => onNavigate("solar")}>
-            二十四节气
-            <ChevronRight size={12} />
-          </button>
+        <div className="dock-folk-grid">
+          {[folkItems[0], folkItems[3], folkItems[4], folkItems[12]].map(
+            item => (
+              <button
+                key={item.id}
+                onClick={() => onNavigate("folk", item.id)}
+                aria-label={`查看${item.name}`}
+              >
+                <img
+                  src={assetUrl(item.images[0].src)}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span>{item.name}</span>
+                <ArrowUpRight size={14} />
+              </button>
+            )
+          )}
         </div>
       </div>
       <div className="dock-section dock-artifacts">
@@ -187,7 +144,13 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
             >
               <span
                 className={`dock-preview-frame dock-preview-${item.id}`}
-                style={item.id === "artifact-5" ? { backgroundImage: `url("${assetUrl(item.images[0].src)}")` } : undefined}
+                style={
+                  item.id === "artifact-5"
+                    ? {
+                        backgroundImage: `url("${assetUrl(item.images[0].src)}")`,
+                      }
+                    : undefined
+                }
               >
                 <img
                   src={assetUrl(item.images[0].src)}
@@ -196,7 +159,9 @@ export default function BottomModules({ onNavigate, onRouteSelect }: Props) {
                   decoding="async"
                 />
               </span>
-              <span className="dock-preview-caption">{item.name.split("（")[0]}</span>
+              <span className="dock-preview-caption">
+                {item.name.split("（")[0]}
+              </span>
               <ArrowUpRight size={16} />
             </button>
           ))}

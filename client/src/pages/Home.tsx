@@ -18,25 +18,41 @@ import { toast } from "sonner";
 import ArtifactsPage from "./ArtifactsPage";
 import TimelinePage from "./TimelinePage";
 import RoutesPage from "./RoutesPage";
-import SolarTermsPage from "./SolarTermsPage";
 import CoverPage from "./CoverPage";
 import CatalogPage from "./CatalogPage";
 import { isCompactViewport, useCompactLayout } from "@/hooks/useCompactLayout";
-import { navigationOrder as order, readNavigation, getInitialNavigation, navigationHistoryState } from "@/lib/navigation";
+import {
+  navigationOrder as order,
+  readNavigation,
+  getInitialNavigation,
+  navigationHistoryState,
+} from "@/lib/navigation";
 
 export default function Home() {
   const isCompactLayout = useCompactLayout();
-  const [navigation, setNavigation] = useState(() => getInitialNavigation(
-    window.location.hash,
-    (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined)?.type,
-    window.history.state,
-  ));
+  const [navigation, setNavigation] = useState(() =>
+    getInitialNavigation(
+      window.location.hash,
+      (
+        performance.getEntriesByType("navigation")[0] as
+          | PerformanceNavigationTiming
+          | undefined
+      )?.type,
+      window.history.state
+    )
+  );
   const entryNavigation = useRef(navigation);
   useEffect(() => {
     const initial = entryNavigation.current;
     const url = new URL(window.location.href);
-    url.hash = initial.section + (initial.target ? "/" + encodeURIComponent(initial.target) : "");
-    window.history.replaceState(navigationHistoryState(window.history.state), "", url);
+    url.hash =
+      initial.section +
+      (initial.target ? "/" + encodeURIComponent(initial.target) : "");
+    window.history.replaceState(
+      navigationHistoryState(window.history.state),
+      "",
+      url
+    );
   }, []);
   const activeNav = navigation.section;
   const scrollArea = useRef<HTMLDivElement>(null);
@@ -91,7 +107,11 @@ export default function Home() {
       const url = new URL(window.location.href);
       url.hash = section + (target ? "/" + encodeURIComponent(target) : "");
       if (url.href !== window.location.href)
-        window.history.pushState(navigationHistoryState(window.history.state), "", url);
+        window.history.pushState(
+          navigationHistoryState(window.history.state),
+          "",
+          url
+        );
     },
     [activeNav, navigation.target]
   );
@@ -236,17 +256,13 @@ export default function Home() {
   const backToMap = () => handleNavChange("map");
   const currentName =
     chapters.find(chapter => chapter.id === activeNav)?.name ||
-    (activeNav === "routes"
-      ? "主题线路"
-      : activeNav === "solar"
-        ? "二十四节气"
-        : "封面");
+    (activeNav === "routes" ? "主题线路" : "封面");
 
   return (
     <div className="culture-app h-[100dvh] min-h-[100svh] flex flex-col overflow-hidden">
       {activeNav !== "cover" && (
         <Header
-          activeNav={activeNav === "solar" ? "folk" : activeNav}
+          activeNav={activeNav}
           onNavChange={handleNavChange}
           onSearch={handleSearch}
         />
@@ -292,10 +308,7 @@ export default function Home() {
                       onNext={() => stepPoint(1)}
                     />
                   </main>
-                  <BottomModules
-                    onNavigate={handleNavChange}
-                    onRouteSelect={handleRouteSelect}
-                  />
+                  <BottomModules onNavigate={handleNavChange} />
                   <Footer />
                 </>
               )}
@@ -329,12 +342,6 @@ export default function Home() {
                 <RoutesPage
                   onBack={backToMap}
                   onRouteSelect={handleRouteSelect}
-                />
-              )}
-              {activeNav === "solar" && (
-                <SolarTermsPage
-                  onBack={backToMap}
-                  initialTarget={navigation.target}
                 />
               )}
             </>
